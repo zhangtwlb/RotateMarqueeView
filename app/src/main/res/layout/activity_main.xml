@@ -84,25 +84,33 @@
             android:id="@+id/bt_control_space"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:tooltipText="@string/app_name"
             android:entries="@array/spinner_space" />
 
         <Button
             android:id="@+id/bt_control_continue"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="继续" />
         <Button
             android:id="@+id/bt_control_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="停止" />
         <Button
             android:id="@+id/bt_control_flicker"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="闪烁" />
+        <Button
+            android:id="@+id/bt_control_reversal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="反转" />
     </LinearLayout>
 
 
@@ -113,9 +121,7 @@
         android:layout_marginTop="30dp"
         app:marqueeview_repet_type="repet_continuous"
         app:marqueeview_text_size="15"
-        app:marqueeview_text_angle="180"
-        app:marqueeview_text_color="@color/colorAccent"
-        app:marqueeview_text_speed="2"
+        app:marqueeview_text_angle="0"
         android:background="#804F5151"/>
 
 </LinearLayout>

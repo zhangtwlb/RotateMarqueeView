@@ -56,6 +56,7 @@ public class MarqueeView extends View implements Runnable {
     private int alpha=255;
     private boolean flag;
     private boolean isFlicker;
+    private boolean isResversable;
 
 
     public MarqueeView(Context context) {
@@ -127,10 +128,10 @@ public class MarqueeView extends View implements Runnable {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        //旋转
         int width=getMeasuredWidth(),height=getMeasuredHeight();
-//        canvas.translate(width,height);
-        //首先偏移在旋转，是因为，如果先旋转，本身xy坐标系也会跟着旋转，之后在偏移会不方便我们的控制，也不直观
         canvas.rotate(textAngle,width/2, height/2);
+
         if(isFlicker){//是否开启闪烁
             if (flag) {
                 paint.setAlpha(0);//文字透明度
@@ -140,71 +141,92 @@ public class MarqueeView extends View implements Runnable {
         }else {
             setTextAlpha(alpha);
         }
-        if (resetInit) {
-            setTextDistance(textDistance1);
 
-            if (startLocationDistance < 0) {
-                startLocationDistance = 0;
-            } else if (startLocationDistance > 1) {
-                startLocationDistance = 1;
+        if(isResversable){//反向
+            if (resetInit) {
+                setTextDistance(textDistance1);
+                if (startLocationDistance < 0) {
+                    startLocationDistance = 0;
+                } else if (startLocationDistance > 1) {
+                    startLocationDistance = 1;
+                }
+                xLocation = getWidth() * startLocationDistance;
+                resetInit = false;
             }
-            xLocation = getWidth() * startLocationDistance;
-//            Log.e(TAG, "onMeasure: --- " + xLocation);
-            resetInit = false;
-        }
-
-
-        //需要判断滚动模式的
-        switch (repetType) {
-            case REPET_ONCETIME:
-
-                if (contentWidth < (-xLocation)) {
-                    //也就是说文字已经到头了
-//                    此时停止线程就可以了
-                    stopRoll();
-                }
-                break;
-            case REPET_INTERVAL:
-                if (contentWidth <= (-xLocation)) {
-                    //也就是说文字已经到头了
-                    xLocation = getWidth();
-                }
-                break;
-
-            case REPET_CONTINUOUS:
-
-
-                if (xLocation < 0) {
-                    int beAppend = (int) ((-xLocation) / contentWidth);
-
-                    Log.e(TAG, "onDraw: ---" + contentWidth + "--------" + (-xLocation) + "------" + beAppend);
-
-                    if (beAppend >= repetCount) {
-                        repetCount++;
-                        //也就是说文字已经到头了
-//                    xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
-                        string = string + content;
+            switch (repetType) {
+                case REPET_ONCETIME:
+                    if (contentWidth < (-xLocation)) {
+                        stopRoll();//也就是说文字已经到头了 此时停止线程就可以了
                     }
+                    break;
+                case REPET_INTERVAL:
+                    if (contentWidth <= (-xLocation)) {
+                        xLocation = getWidth();//也就是说文字已经到头了
+                    }
+                    break;
+                case REPET_CONTINUOUS:
+                    if (xLocation > 0) {
+                        int beAppend = (int) ((-xLocation) / contentWidth);
+                        Log.e(TAG, "onDraw: ---" + contentWidth + "--------" + (-xLocation) + "------" + beAppend);
+                        if (beAppend >= repetCount) {
+                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
+                            string = string + content;
+                        }
+                    } //此处需要判断的xLocation需要加上相应的宽度
+                    break;
+                default: //默认一次到头好了
+                    if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
+                        stopRoll();
+                    }
+                    break;
+            }
+            if (string != null) {   //把文字画出来
+                canvas.drawText(string, xLocation, getHeight() / 2 + textHeight / 2, paint);
+                Log.e("xLocation","当前x:"+xLocation);
+            }
+        }else {//正向
+            if (resetInit) {
+                setTextDistance(textDistance1);
+                if (startLocationDistance < 0) {
+                    startLocationDistance = 0;
+                } else if (startLocationDistance > 1) {
+                    startLocationDistance = 1;
                 }
-                //此处需要判断的xLocation需要加上相应的宽度
-                break;
-
-            default:
-                //默认一次到头好了
-                if (contentWidth < (-xLocation)) {
-                    //也就是说文字已经到头了
-//                    此时停止线程就可以了
-                    stopRoll();
-                }
-                break;
+                xLocation = getWidth() * startLocationDistance;
+                resetInit = false;
+            }
+            switch (repetType) {
+                case REPET_ONCETIME:
+                    if (contentWidth < (-xLocation)) {
+                        stopRoll();//也就是说文字已经到头了 此时停止线程就可以了
+                    }
+                    break;
+                case REPET_INTERVAL:
+                    if (contentWidth <= (-xLocation)) {
+                        xLocation = getWidth();//也就是说文字已经到头了
+                    }
+                    break;
+                case REPET_CONTINUOUS:
+                    if (xLocation < 0) {
+                        int beAppend = (int) ((-xLocation) / contentWidth);
+                        Log.e(TAG, "onDraw: ---" + contentWidth + "--------" + (-xLocation) + "------" + beAppend);
+                        if (beAppend >= repetCount) {
+                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
+                            string = string + content;
+                        }
+                    } //此处需要判断的xLocation需要加上相应的宽度
+                    break;
+                default: //默认一次到头好了
+                    if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
+                        stopRoll();
+                    }
+                    break;
+            }
+            if (string != null) {   //把文字画出来
+                canvas.drawText(string, xLocation, getHeight() / 2 + textHeight / 2, paint);
+                Log.e("xLocation","当前x:"+xLocation);
+            }
         }
-
-
-        //把文字画出来
-        if (string != null) {
-            canvas.drawText(string, xLocation, getHeight() / 2 + textHeight / 2, paint);
-        }
-
     }
 
 
@@ -231,8 +253,12 @@ public class MarqueeView extends View implements Runnable {
     public void run() {
         while (isRoll && !TextUtils.isEmpty(content)) {
             try {
-                Thread.sleep(10);
-                xLocation = xLocation - speed;
+                Thread.sleep(20);
+                if(isResversable){
+                    xLocation = -(xLocation - speed);
+                }else {
+                    xLocation = xLocation - speed;
+                }
                 flag = !flag;
                 postInvalidate();//每隔10毫秒重绘视图
             } catch (InterruptedException e) {
@@ -292,14 +318,16 @@ public class MarqueeView extends View implements Runnable {
         this.repetType = isContinuable;
     }
 
-//    /**
-//     * 是否反向
-//     *
-//     * @param isResversable
-//     */
-//    private void setReversalble(boolean isResversable) {
-//        this.isResversable = isResversable;
-//    }
+    /**
+     * 是否反向
+     *
+     * @param isResversable
+     */
+    public void setReversalble(boolean isResversable) {
+        StringBuilder stringBuiler=new StringBuilder(content);
+        content=stringBuiler.reverse().toString();
+        this.isResversable = isResversable;
+    }
 
 
     /**
@@ -354,8 +382,7 @@ public class MarqueeView extends View implements Runnable {
     }
 
     /**
-     * http://blog.csdn.net/u014702653/article/details/51985821
-     * 详细解说了
+     *
      *
      * @param
      * @return

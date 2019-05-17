@@ -59,7 +59,6 @@
         <item>-45</item>
         <item>90</item>
         <item>-90</item>
-        <item>180</item>
     </string-array>
     <string-array name="spinner_alpha" >
         <item>透明度选择</item>

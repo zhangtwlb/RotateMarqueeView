@@ -12,10 +12,10 @@ import com.marquee.dingrui.marqueeviewlib.MarqueeView;
 public class MainActivity extends AppCompatActivity {
 
     private MarqueeView mV3;
-    private Button btStop,bt_control_continue,bt_control_add,bt_control_flicker;
+    private Button btStop,bt_control_continue,bt_control_add,bt_control_flicker,bt_control_reversal;
     private EditText ed_text;
     private Spinner bt_control_color,bt_control_size,bt_control_speed,bt_control_from,bt_control_alpha,bt_control_count,bt_control_space;
-    private boolean flag;
+    private boolean flag,flagReversal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 flag=!flag;
                 mV3.setFlicker(flag);
+            }
+        });
+        bt_control_reversal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flagReversal=!flagReversal;
+                mV3.setReversalble(flagReversal);
             }
         });
         bt_control_add.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
             }
         });
-        //循环次数
+        //循环方式
         bt_control_count.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
@@ -157,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         ed_text = findViewById(R.id.ed_text);
         bt_control_add = findViewById(R.id.bt_control_add);
         bt_control_flicker = findViewById(R.id.bt_control_flicker);
+        bt_control_reversal = findViewById(R.id.bt_control_reversal);
         bt_control_color = findViewById(R.id.bt_control_color);
         bt_control_size = findViewById(R.id.bt_control_size);
         bt_control_speed = findViewById(R.id.bt_control_speed);
