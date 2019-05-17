@@ -31,6 +31,8 @@
         <item>#F3CC08</item>
         <item>#F32D06</item>
         <item>#A4F307</item>
+        <item>#0425FF</item>
+        <item>#9507F3</item>
     </string-array>
     <string-array name="spinner_size" >
         <item>大小选择</item>
@@ -41,6 +43,19 @@
         <item>20</item>
         <item>22</item>
         <item>24</item>
+        <item>26</item>
+        <item>28</item>
+        <item>30</item>
+        <item>32</item>
+        <item>34</item>
+        <item>40</item>
+        <item>45</item>
+        <item>50</item>
+        <item>55</item>
+        <item>60</item>
+        <item>65</item>
+        <item>70</item>
+        <item>100</item>
     </string-array>
     <string-array name="spinner_speed" >
         <item>速度选择</item>
@@ -51,10 +66,19 @@
         <item>4</item>
         <item>5</item>
         <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>15</item>
     </string-array>
     <string-array name="spinner_from" >
         <item>方向选择</item>
         <item>0</item>
+        <item>30</item>
+        <item>-30</item>
+        <item>60</item>
+        <item>-60</item>
         <item>45</item>
         <item>-45</item>
         <item>90</item>
@@ -79,7 +103,6 @@
         <item>循环方式</item>
         <item>0</item>
         <item>1</item>
-        <item>2</item>
     </string-array>
     <string-array name="spinner_space" >
         <item>间距选择</item>

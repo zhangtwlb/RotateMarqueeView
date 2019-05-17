@@ -150,32 +150,32 @@ public class MarqueeView extends View implements Runnable {
                 } else if (startLocationDistance > 1) {
                     startLocationDistance = 1;
                 }
-                xLocation = getWidth() * startLocationDistance;
+                xLocation = -contentWidth;//getWidth() * startLocationDistance;
                 resetInit = false;
             }
             switch (repetType) {
                 case REPET_ONCETIME:
-                    if (contentWidth < (-xLocation)) {
+                    if (contentWidth >xLocation+getWidth()) {
                         stopRoll();//也就是说文字已经到头了 此时停止线程就可以了
                     }
                     break;
                 case REPET_INTERVAL:
-                    if (contentWidth <= (-xLocation)) {
-                        xLocation = getWidth();//也就是说文字已经到头了
+                    if (contentWidth <= xLocation-getWidth()) {
+                        xLocation = -contentWidth;//也就是说文字已经到头了
                     }
                     break;
                 case REPET_CONTINUOUS:
-                    if (xLocation > 0) {
-                        int beAppend = (int) ((-xLocation) / contentWidth);
-                        Log.e(TAG, "onDraw: ---" + contentWidth + "--------" + (-xLocation) + "------" + beAppend);
-                        if (beAppend >= repetCount) {
+                    if (xLocation > contentWidth) {
+                        int beAppend = (int) ((xLocation+getWidth()+contentWidth) /contentWidth);
+//                        if (beAppend >= repetCount) {
                             repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
                             string = string + content;
-                        }
+//                        }
+                        Log.e(TAG, "onDraw: ---" + contentWidth + "----"+string+"----" + (xLocation) + "------" + beAppend);
                     } //此处需要判断的xLocation需要加上相应的宽度
                     break;
                 default: //默认一次到头好了
-                    if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
+                    if (contentWidth >xLocation) { //也就是说文字已经到头了  此时停止线程就可以了
                         stopRoll();
                     }
                     break;
@@ -255,7 +255,7 @@ public class MarqueeView extends View implements Runnable {
             try {
                 Thread.sleep(20);
                 if(isResversable){
-                    xLocation = -(xLocation - speed);
+                    xLocation = xLocation + speed;
                 }else {
                     xLocation = xLocation - speed;
                 }
@@ -327,6 +327,8 @@ public class MarqueeView extends View implements Runnable {
         StringBuilder stringBuiler=new StringBuilder(content);
         content=stringBuiler.reverse().toString();
         this.isResversable = isResversable;
+        resetInit = true;
+        setContent(content);
     }
 
 
@@ -478,8 +480,14 @@ public class MarqueeView extends View implements Runnable {
         if (TextUtils.isEmpty(content2)){
             return;
         }
-        if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
-            xLocation = getWidth() * startLocationDistance;
+        if(isResversable){
+            if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
+                xLocation = 0;//getWidth() * startLocationDistance;
+            }
+        }else {
+            if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
+                xLocation = getWidth() * startLocationDistance;
+            }
         }
 
         if (!content2.endsWith(black_count)) {
@@ -490,7 +498,6 @@ public class MarqueeView extends View implements Runnable {
         //这里需要计算宽度啦，当然要根据模式来搞
         if (repetType == REPET_CONTINUOUS) {
 //如果说是循环的话，则需要计算 文本的宽度 ，然后再根据屏幕宽度 ， 看能一个屏幕能盛得下几个文本
-
             contentWidth = (int) (getContentWidth(content) + textdistance);//可以理解为一个单元内容的长度
             //从0 开始计算重复次数了， 否则到最后 会跨不过这个坎而消失。
             repetCount = 0;
@@ -499,13 +506,21 @@ public class MarqueeView extends View implements Runnable {
             for (int i = 0; i <= contentCount; i++) {
                 this.string = this.string + this.content;//根据重复次数去叠加。
             }
-
         } else {
-            if (xLocation < 0 && repetType == REPET_ONCETIME) {
-                if (-xLocation > contentWidth) {
-                    xLocation = getWidth() * startLocationDistance;
+            if(isResversable){
+                if (xLocation > 0 && repetType == REPET_ONCETIME) {
+                    if (xLocation > contentWidth) {
+                        xLocation = 0;//getWidth() * startLocationDistance;
+                    }
+                }
+            }else {
+                if (xLocation < 0 && repetType == REPET_ONCETIME) {
+                    if (-xLocation > contentWidth) {
+                        xLocation = getWidth() * startLocationDistance;
+                    }
                 }
             }
+
             contentWidth = (int) getContentWidth(content);
 
             this.string = content2;
