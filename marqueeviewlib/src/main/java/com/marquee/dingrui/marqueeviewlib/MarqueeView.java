@@ -6,19 +6,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.TintTypedArray;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-
 import java.util.List;
-import java.util.Random;
 
 /**
- * Created by ruedy on 2018/3/8.
+ * Created by ztw 2019.5.17
  */
 
 public class MarqueeView extends View implements Runnable {
@@ -56,8 +53,9 @@ public class MarqueeView extends View implements Runnable {
     private String content = "";
 
     private float textHeight;
-    private int countX;
-    private int countY;
+    private int alpha=255;
+    private boolean flag;
+    private boolean isFlicker;
 
 
     public MarqueeView(Context context) {
@@ -129,9 +127,19 @@ public class MarqueeView extends View implements Runnable {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.translate(getMeasuredWidth()*1, getMeasuredHeight()*1);
+        int width=getMeasuredWidth(),height=getMeasuredHeight();
+//        canvas.translate(width,height);
         //首先偏移在旋转，是因为，如果先旋转，本身xy坐标系也会跟着旋转，之后在偏移会不方便我们的控制，也不直观
-        canvas.rotate(textAngle);
+        canvas.rotate(textAngle,width/2, height/2);
+        if(isFlicker){//是否开启闪烁
+            if (flag) {
+                paint.setAlpha(0);//文字透明度
+            } else {
+                setTextAlpha(alpha);
+            }
+        }else {
+            setTextAlpha(alpha);
+        }
         if (resetInit) {
             setTextDistance(textDistance1);
 
@@ -200,10 +208,22 @@ public class MarqueeView extends View implements Runnable {
     }
 
 
+    public boolean isFlicker() {
+        return isFlicker;
+    }
+
+    public void setFlicker(boolean flicker) {
+        isFlicker = flicker;
+    }
+
     public void setRepetType(int repetType) {
         this.repetType = repetType;
         resetInit = true;
         setContent(content);
+    }
+
+    public void setTextAngle(float textAngle) {
+        this.textAngle = textAngle;
     }
 
 
@@ -213,6 +233,7 @@ public class MarqueeView extends View implements Runnable {
             try {
                 Thread.sleep(10);
                 xLocation = xLocation - speed;
+                flag = !flag;
                 postInvalidate();//每隔10毫秒重绘视图
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -355,6 +376,26 @@ public class MarqueeView extends View implements Runnable {
             this.textColor = textColor;
             paint.setColor(getResources().getColor(textColor));//文字颜色值,可以不设定
         }
+    }
+    /**
+     * 设置文字颜色
+     *
+     * @param textColorString
+     */
+    public void setTextColorByString(String textColorString) {
+        if (textColorString.contains("#")) {
+            this.textColor = Color.parseColor(textColorString);
+            paint.setColor(textColor);//文字颜色值,可以不设定
+        }
+    }
+    /**
+     * 设置文字透明度
+     *
+     * @param alpha
+     */
+    public void setTextAlpha(int alpha) {
+            this.alpha=alpha;
+            paint.setAlpha(alpha);//文字透明度
     }
 
     /**
