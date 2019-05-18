@@ -1,4 +1,4 @@
-package com.marquee.dingrui.marqueeview;
+package com.tw.marquee.demo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +7,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import com.marquee.dingrui.marqueeviewlib.MarqueeView;
+
+import com.tw.marquee.lib.MarqueeView;
 
 public class MainActivity extends AppCompatActivity {
 

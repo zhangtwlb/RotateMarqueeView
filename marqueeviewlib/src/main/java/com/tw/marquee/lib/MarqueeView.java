@@ -1,4 +1,4 @@
-package com.marquee.dingrui.marqueeviewlib;
+package com.tw.marquee.lib;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+
+
 import java.util.List;
 
 /**
@@ -53,10 +55,10 @@ public class MarqueeView extends View implements Runnable {
     private String content = "";
 
     private float textHeight;
-    private int alpha=255;
+    private int alpha=255;//默认透明度
     private boolean flag;
-    private boolean isFlicker;
-    private boolean isResversable;
+    private boolean isFlicker;//闪烁标识
+    private boolean isResversable;//反向标识
 
 
     public MarqueeView(Context context) {
@@ -260,7 +262,7 @@ public class MarqueeView extends View implements Runnable {
                     xLocation = xLocation - speed;
                 }
                 flag = !flag;
-                postInvalidate();//每隔10毫秒重绘视图
+                postInvalidate();//每隔20毫秒重绘视图
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -325,7 +327,7 @@ public class MarqueeView extends View implements Runnable {
      */
     public void setReversalble(boolean isResversable) {
         StringBuilder stringBuiler=new StringBuilder(content);
-        content=stringBuiler.reverse().toString();
+        content=stringBuiler.reverse().toString();//文字反向
         this.isResversable = isResversable;
         resetInit = true;
         setContent(content);
@@ -385,7 +387,7 @@ public class MarqueeView extends View implements Runnable {
 
     /**
      *
-     *
+     *获取内容高度
      * @param
      * @return
      */
@@ -497,7 +499,7 @@ public class MarqueeView extends View implements Runnable {
 
         //这里需要计算宽度啦，当然要根据模式来搞
         if (repetType == REPET_CONTINUOUS) {
-//如果说是循环的话，则需要计算 文本的宽度 ，然后再根据屏幕宽度 ， 看能一个屏幕能盛得下几个文本
+         //如果说是循环的话，则需要计算 文本的宽度 ，然后再根据屏幕宽度 ， 看能一个屏幕能盛得下几个文本
             contentWidth = (int) (getContentWidth(content) + textdistance);//可以理解为一个单元内容的长度
             //从0 开始计算重复次数了， 否则到最后 会跨不过这个坎而消失。
             repetCount = 0;
@@ -534,7 +536,7 @@ public class MarqueeView extends View implements Runnable {
     }
 
     /**
-     * 从新添加内容的时候，是否初始化位置
+     * 新添加内容的时候，是否初始化位置
      *
      * @param isReset
      */
@@ -543,6 +545,6 @@ public class MarqueeView extends View implements Runnable {
     }
 
     public void appendContent(String appendContent) {
-//有兴趣的朋友可以自己完善，在现有的基础之上，静默追加新的 公告
+      // 追加新的 公告
     }
 }

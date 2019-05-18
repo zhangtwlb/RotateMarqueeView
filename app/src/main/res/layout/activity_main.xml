@@ -114,7 +114,7 @@
     </LinearLayout>
 
 
-    <com.marquee.dingrui.marqueeviewlib.MarqueeView
+    <com.tw.marquee.lib.MarqueeView
         android:id="@+id/mv_main3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
