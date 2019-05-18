@@ -73,6 +73,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:entries="@array/spinner_count" />
+        <Spinner
+            android:id="@+id/bt_control_repeat_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/spinner_repeat_count" />
 
     </LinearLayout>
 

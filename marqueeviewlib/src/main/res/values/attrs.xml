@@ -35,7 +35,7 @@
         <item>#9507F3</item>
     </string-array>
     <string-array name="spinner_size" >
-        <item>大小选择</item>
+        <item>字体大小</item>
         <item>12</item>
         <item>14</item>
         <item>16</item>
@@ -58,7 +58,7 @@
         <item>100</item>
     </string-array>
     <string-array name="spinner_speed" >
-        <item>速度选择</item>
+        <item>速度</item>
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -73,7 +73,7 @@
         <item>15</item>
     </string-array>
     <string-array name="spinner_from" >
-        <item>方向选择</item>
+        <item>方向</item>
         <item>0</item>
         <item>30</item>
         <item>-30</item>
@@ -85,7 +85,7 @@
         <item>-90</item>
     </string-array>
     <string-array name="spinner_alpha" >
-        <item>透明度选择</item>
+        <item>透明度</item>
         <item>0</item>
         <item>10</item>
         <item>20</item>
@@ -103,7 +103,19 @@
         <item>循环方式</item>
         <item>0</item>
         <item>1</item>
+    </string-array>
+    <string-array name="spinner_repeat_count" >
+        <item>循环次数</item>
+        <item>1</item>
         <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
     </string-array>
     <string-array name="spinner_space" >
         <item>间距选择</item>

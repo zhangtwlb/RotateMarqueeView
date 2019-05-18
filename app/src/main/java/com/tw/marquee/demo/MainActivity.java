@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private MarqueeView mV3;
     private Button btStop,bt_control_continue,bt_control_add,bt_control_flicker,bt_control_reversal;
     private EditText ed_text;
-    private Spinner bt_control_color,bt_control_size,bt_control_speed,bt_control_from,bt_control_alpha,bt_control_count,bt_control_space;
+    private Spinner bt_control_color,bt_control_size,bt_control_speed,bt_control_from,bt_control_alpha,bt_control_count,bt_control_repeat_count,bt_control_space;
     private boolean flag,flagReversal;
 
     @Override
@@ -119,6 +119,19 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
             }
         });
+        //循环次数
+        bt_control_repeat_count.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String str=parent.getItemAtPosition(position).toString();
+                if(position>0)mV3.setRepetCounts(Integer.parseInt(str));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // TODO Auto-generated method stub
+            }
+        });
         //设置文字大小
         bt_control_size.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -166,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         bt_control_add = findViewById(R.id.bt_control_add);
         bt_control_flicker = findViewById(R.id.bt_control_flicker);
         bt_control_reversal = findViewById(R.id.bt_control_reversal);
+        bt_control_repeat_count = findViewById(R.id.bt_control_repeat_count);
         bt_control_color = findViewById(R.id.bt_control_color);
         bt_control_size = findViewById(R.id.bt_control_size);
         bt_control_speed = findViewById(R.id.bt_control_speed);

@@ -31,7 +31,7 @@ public class MarqueeView extends View implements Runnable {
     private String black_count = "";//间距转化成空格距离
 
     private int repetType = REPET_INTERVAL;//滚动模式
-    public static final int REPET_ONCETIME = 0;//一次结束
+    public static final int REPET_ONCETIME = 0;//n次结束
     public static final int REPET_INTERVAL = 1;//一次结束以后，再继续第二次
     public static final int REPET_CONTINUOUS = 2;//紧接着 滚动第二次
 
@@ -48,7 +48,7 @@ public class MarqueeView extends View implements Runnable {
     private TextPaint paint;//画笔
     private Rect rect;
 
-    private int repetCount = 0;//
+    private int repetCount = 0,repetCounts=1;//
     private boolean resetInit = true;
 
     private Thread thread;
@@ -59,6 +59,7 @@ public class MarqueeView extends View implements Runnable {
     private boolean flag;
     private boolean isFlicker;//闪烁标识
     private boolean isResversable;//反向标识
+    private int times;//次数
 
 
     public MarqueeView(Context context) {
@@ -157,25 +158,32 @@ public class MarqueeView extends View implements Runnable {
             }
             switch (repetType) {
                 case REPET_ONCETIME:
-                    if (contentWidth >xLocation+getWidth()) {
-                        stopRoll();//也就是说文字已经到头了 此时停止线程就可以了
+                    if (contentWidth <= xLocation-getWidth()) {
+                        if(times==repetCounts){
+
+                            stopRoll();
+                            times=0;
+                        }
+                        xLocation = -contentWidth;//也就是说文字已经到头了
+                        times++;
                     }
+
                     break;
                 case REPET_INTERVAL:
                     if (contentWidth <= xLocation-getWidth()) {
                         xLocation = -contentWidth;//也就是说文字已经到头了
                     }
                     break;
-                case REPET_CONTINUOUS:
-                    if (xLocation > getWidth()-contentWidth) {
-                        int beAppend = (int) ((xLocation+getWidth()+contentWidth) /contentWidth);
-                        if (beAppend >= repetCount) {
-                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
-                            string = string + content;
-                        }
-                        Log.e(TAG, "onDraw: ---" + contentWidth + "----"+string+"----" + (xLocation) + "------" + beAppend);
-                    } //此处需要判断的xLocation需要加上相应的宽度
-                    break;
+//                case REPET_CONTINUOUS:
+//                    if (xLocation > xLocation-getWidth()) {
+//                        int beAppend = (int) ((xLocation-getWidth()) /contentWidth);
+//                        if (beAppend >= repetCount) {
+//                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
+//                            string = string + content;
+//                        }
+//                        Log.e(TAG, "onDraw: ---" + contentWidth + "----"+string+"----" + (xLocation) + "------" + beAppend);
+//                    } //此处需要判断的xLocation需要加上相应的宽度
+//                    break;
                 default: //默认一次到头好了
                     if (contentWidth >xLocation) { //也就是说文字已经到头了  此时停止线程就可以了
                         stopRoll();
@@ -199,25 +207,30 @@ public class MarqueeView extends View implements Runnable {
             }
             switch (repetType) {
                 case REPET_ONCETIME:
-                    if (contentWidth < (-xLocation)) {
-                        stopRoll();//也就是说文字已经到头了 此时停止线程就可以了
-                    }
+                        if (contentWidth <= (-xLocation)) {
+                            if(times==repetCounts){
+                                stopRoll();
+                                times=0;
+                            }
+                            xLocation = getWidth();//也就是说文字已经到头了
+                            times++;
+                        }
                     break;
                 case REPET_INTERVAL:
                     if (contentWidth <= (-xLocation)) {
                         xLocation = getWidth();//也就是说文字已经到头了
                     }
                     break;
-                case REPET_CONTINUOUS:
-                    if (xLocation < 0) {
-                        int beAppend = (int) ((-xLocation) / contentWidth);
-                        Log.e(TAG, "onDraw: ---" + contentWidth + "--------" + (-xLocation) + "------" + beAppend);
-                        if (beAppend >= repetCount) {
-                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
-                            string = string + content;
-                        }
-                    } //此处需要判断的xLocation需要加上相应的宽度
-                    break;
+//                case REPET_CONTINUOUS:
+//                    if (xLocation < 0) {
+//                        int beAppend = (int) ((-xLocation) / contentWidth);
+//                        Log.e(TAG, "onDraw: ---" + contentWidth + "--------" + (-xLocation) + "------" + beAppend);
+//                        if (beAppend >= repetCount) {
+//                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
+//                            string = string + content;
+//                        }
+//                    } //此处需要判断的xLocation需要加上相应的宽度
+//                    break;
                 default: //默认一次到头好了
                     if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
                         stopRoll();
@@ -238,6 +251,14 @@ public class MarqueeView extends View implements Runnable {
 
     public void setFlicker(boolean flicker) {
         isFlicker = flicker;
+    }
+
+    public int getRepetCounts() {
+        return repetCounts;
+    }
+    /**设置滚动次数*/
+    public void setRepetCounts(int repetCounts) {
+        this.repetCounts = repetCounts;
     }
 
     public void setRepetType(int repetType) {
@@ -484,7 +505,7 @@ public class MarqueeView extends View implements Runnable {
         }
         if(isResversable){
             if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
-                xLocation = 0;//getWidth() * startLocationDistance;
+                xLocation = -contentWidth;//getWidth() * startLocationDistance;
             }
         }else {
             if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
@@ -498,21 +519,21 @@ public class MarqueeView extends View implements Runnable {
         this.content = content2;
 
         //这里需要计算宽度啦，当然要根据模式来搞
-        if (repetType == REPET_CONTINUOUS) {
-         //如果说是循环的话，则需要计算 文本的宽度 ，然后再根据屏幕宽度 ， 看能一个屏幕能盛得下几个文本
-            contentWidth = (int) (getContentWidth(content) + textdistance);//可以理解为一个单元内容的长度
-            //从0 开始计算重复次数了， 否则到最后 会跨不过这个坎而消失。
-            repetCount = 0;
-            int contentCount = (getWidth() / contentWidth) + 2;
-            this.string = "";
-            for (int i = 0; i <= contentCount; i++) {
-                this.string = this.string + this.content;//根据重复次数去叠加。
-            }
-        } else {
+//        if (repetType == REPET_CONTINUOUS) {
+//         //如果说是循环的话，则需要计算 文本的宽度 ，然后再根据屏幕宽度 ， 看能一个屏幕能盛得下几个文本
+//            contentWidth = (int) (getContentWidth(content) + textdistance);//可以理解为一个单元内容的长度
+//            //从0 开始计算重复次数了， 否则到最后 会跨不过这个坎而消失。
+//            repetCount = 0;
+//            int contentCount = (getWidth() / contentWidth) + 2;
+//            this.string = "";
+//            for (int i = 0; i <= contentCount; i++) {
+//                this.string = this.string + this.content;//根据重复次数去叠加。
+//            }
+//        } else {
             if(isResversable){
                 if (xLocation > 0 && repetType == REPET_ONCETIME) {
                     if (xLocation > contentWidth) {
-                        xLocation = 0;//getWidth() * startLocationDistance;
+                        xLocation = -contentWidth;//getWidth() * startLocationDistance;
                     }
                 }
             }else {
@@ -526,7 +547,7 @@ public class MarqueeView extends View implements Runnable {
             contentWidth = (int) getContentWidth(content);
 
             this.string = content2;
-        }
+//        }
 
         if (!isRoll) {//如果没有在滚动的话，重新开启线程滚动
             continueRoll();
