@@ -165,12 +165,12 @@ public class MarqueeView extends View implements Runnable {
                     }
                     break;
                 case REPET_CONTINUOUS:
-                    if (xLocation > contentWidth) {
+                    if (xLocation > getWidth()-contentWidth) {
                         int beAppend = (int) ((xLocation+getWidth()+contentWidth) /contentWidth);
-//                        if (beAppend >= repetCount) {
+                        if (beAppend >= repetCount) {
                             repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
                             string = string + content;
-//                        }
+                        }
                         Log.e(TAG, "onDraw: ---" + contentWidth + "----"+string+"----" + (xLocation) + "------" + beAppend);
                     } //此处需要判断的xLocation需要加上相应的宽度
                     break;

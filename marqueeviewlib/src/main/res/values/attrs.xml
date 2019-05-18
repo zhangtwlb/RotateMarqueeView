@@ -103,6 +103,7 @@
         <item>循环方式</item>
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>
     <string-array name="spinner_space" >
         <item>间距选择</item>

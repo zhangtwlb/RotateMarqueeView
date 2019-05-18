@@ -119,7 +119,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="30dp"
-        app:marqueeview_repet_type="repet_continuous"
         app:marqueeview_text_size="15"
         app:marqueeview_text_angle="0"
         android:background="#804F5151"/>
