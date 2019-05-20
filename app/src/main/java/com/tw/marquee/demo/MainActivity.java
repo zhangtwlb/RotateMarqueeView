@@ -1,7 +1,9 @@
 package com.tw.marquee.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -151,7 +153,11 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String str=parent.getItemAtPosition(position).toString();
-                if(position>0)mV3.setTextSpeed(Integer.parseInt(str));//0-255
+                if(position>0){
+
+                    mV3.setTextTimeSpeed(Integer.parseInt(str));//0-255
+                }
+
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {

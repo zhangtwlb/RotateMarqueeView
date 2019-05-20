@@ -10,6 +10,7 @@ import android.support.v7.widget.TintTypedArray;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -60,6 +61,7 @@ public class MarqueeView extends View implements Runnable {
     private boolean isFlicker;//闪烁标识
     private boolean isResversable;//反向标识
     private int times;//次数
+    private long mInvalidata=20;//刷新界面的频率  单位毫秒
 
 
     public MarqueeView(Context context) {
@@ -276,7 +278,7 @@ public class MarqueeView extends View implements Runnable {
     public void run() {
         while (isRoll && !TextUtils.isEmpty(content)) {
             try {
-                Thread.sleep(20);
+                Thread.sleep(mInvalidata);
                 if(isResversable){
                     xLocation = xLocation + speed;
                 }else {
@@ -471,8 +473,29 @@ public class MarqueeView extends View implements Runnable {
     public void setTextSpeed(float speed) {
         this.speed = speed;
     }
+    /**
+     * 设置单位时间内滚动完成 既 单位时间内的速度
+     *
+     * @param time 时间 单位 秒
+     */
+    public void setTextTimeSpeed(int time) {
+        // 屏幕宽度/时间=速度
+        int width=getScreenWidthPixels(getContext());
+        time= (int) (time*1000/mInvalidata);
+        double speed=((double)width)/time;
+        setTextSpeed((float) speed);
+    }
 
-
+    /**
+     * 获取屏幕宽的像素值
+     *
+     * @param context 上下文
+     * @return 像素值
+     */
+    public static int getScreenWidthPixels(Context context) {
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        return dm.widthPixels;
+    }
     /**
      * |设置滚动的条目内容 ， 集合形式的
      *
