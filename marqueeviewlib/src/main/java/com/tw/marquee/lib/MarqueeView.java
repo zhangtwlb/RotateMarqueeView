@@ -16,6 +16,7 @@ import android.view.View;
 
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by ztw 2019.5.17
@@ -26,9 +27,9 @@ public class MarqueeView extends View implements Runnable {
     private String string;//最终绘制的文本
     private float speed = 1;//移动速度
     private int textColor = Color.BLACK;//文字颜色,默认黑色
-    private float textSize = 12,textAngle=45;//文字颜色,默认黑色
-    private int textdistance ;//
-    private int textDistance1= 10;//item间距，dp单位
+    private float textSize = 12, textAngle = 45;//文字颜色,默认黑色
+    private int textdistance;//
+    private int textDistance1 = 10;//item间距，dp单位
     private String black_count = "";//间距转化成空格距离
 
     private int repetType = REPET_INTERVAL;//滚动模式
@@ -41,6 +42,7 @@ public class MarqueeView extends View implements Runnable {
     private boolean isClickStop = false;//点击是否暂停
     private boolean isResetLocation = true;//默认为true
     private float xLocation = 0;//文本的x坐标
+    private float yLocation;//文本的y坐标
     private int contentWidth;//内容的宽度
 
     private boolean isRoll = false;//是否继续滚动
@@ -49,20 +51,24 @@ public class MarqueeView extends View implements Runnable {
     private TextPaint paint;//画笔
     private Rect rect;
 
-    private int repetCount = 0,repetCounts=1;//
+    private int repetCount = 0, repetCounts = 1;//
     private boolean resetInit = true;
 
     private Thread thread;
     private String content = "";
 
     private float textHeight;
-    private int alpha=255;//默认透明度
-    private boolean flag;
+    private int alpha = 255;//默认透明度
+    private boolean flagFlicker;
     private boolean isFlicker;//闪烁标识
+    private boolean isBLINK;//闪现标识 （闪现在屏幕某个随机位置）
     private boolean isResversable;//反向标识
     private int times;//次数
-    private long mInvalidata=20;//刷新界面的频率  单位毫秒
+    private long mInvalidata = 20;//刷新界面的频率  单位毫秒
 
+    public void setmInvalidata(long mInvalidata) {
+        this.mInvalidata = mInvalidata;
+    }
 
     public MarqueeView(Context context) {
         this(context, null);
@@ -133,49 +139,61 @@ public class MarqueeView extends View implements Runnable {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //旋转
-        int width=getMeasuredWidth(),height=getMeasuredHeight();
-        canvas.rotate(textAngle,width/2, height/2);
-
-        if(isFlicker){//是否开启闪烁
-            if (flag) {
-                paint.setAlpha(0);//文字透明度
+        if (isBLINK) {//是 闪现
+            switch (repetType) {
+                case REPET_ONCETIME:
+                        if (times == repetCounts) {
+                            stopRoll();
+                            times = 0;
+                        }
+                        times++;
+                    break;
+                case REPET_INTERVAL:
+                    break;
+            }
+        } else {
+            //旋转
+            int width = getMeasuredWidth(), height = getMeasuredHeight();
+            canvas.rotate(textAngle, width / 2, height / 2);
+            if (isFlicker) {//是否开启闪烁
+                if (flagFlicker) {
+                    paint.setAlpha(0);//文字透明度
+                } else {
+                    setTextAlpha(alpha);
+                }
             } else {
                 setTextAlpha(alpha);
             }
-        }else {
-            setTextAlpha(alpha);
-        }
 
-        if(isResversable){//反向
-            if (resetInit) {
-                setTextDistance(textDistance1);
-                if (startLocationDistance < 0) {
-                    startLocationDistance = 0;
-                } else if (startLocationDistance > 1) {
-                    startLocationDistance = 1;
+            if (isResversable) {//反向
+                if (resetInit) {
+                    setTextDistance(textDistance1);
+                    if (startLocationDistance < 0) {
+                        startLocationDistance = 0;
+                    } else if (startLocationDistance > 1) {
+                        startLocationDistance = 1;
+                    }
+                    xLocation = -contentWidth;//getWidth() * startLocationDistance;
+                    resetInit = false;
                 }
-                xLocation = -contentWidth;//getWidth() * startLocationDistance;
-                resetInit = false;
-            }
-            switch (repetType) {
-                case REPET_ONCETIME:
-                    if (contentWidth <= xLocation-getWidth()) {
-                        if(times==repetCounts){
+                switch (repetType) {
+                    case REPET_ONCETIME:
+                        if (contentWidth <= xLocation - getWidth()) {
+                            if (times == repetCounts) {
 
-                            stopRoll();
-                            times=0;
+                                stopRoll();
+                                times = 0;
+                            }
+                            xLocation = -contentWidth;//也就是说文字已经到头了
+                            times++;
                         }
-                        xLocation = -contentWidth;//也就是说文字已经到头了
-                        times++;
-                    }
 
-                    break;
-                case REPET_INTERVAL:
-                    if (contentWidth <= xLocation-getWidth()) {
-                        xLocation = -contentWidth;//也就是说文字已经到头了
-                    }
-                    break;
+                        break;
+                    case REPET_INTERVAL:
+                        if (contentWidth <= xLocation - getWidth()) {
+                            xLocation = -contentWidth;//也就是说文字已经到头了
+                        }
+                        break;
 //                case REPET_CONTINUOUS:
 //                    if (xLocation > xLocation-getWidth()) {
 //                        int beAppend = (int) ((xLocation-getWidth()) /contentWidth);
@@ -186,43 +204,43 @@ public class MarqueeView extends View implements Runnable {
 //                        Log.e(TAG, "onDraw: ---" + contentWidth + "----"+string+"----" + (xLocation) + "------" + beAppend);
 //                    } //此处需要判断的xLocation需要加上相应的宽度
 //                    break;
-                default: //默认一次到头好了
-                    if (contentWidth >xLocation) { //也就是说文字已经到头了  此时停止线程就可以了
-                        stopRoll();
-                    }
-                    break;
-            }
-            if (string != null) {   //把文字画出来
-                canvas.drawText(string, xLocation, getHeight() / 2 + textHeight / 2, paint);
-                Log.e("xLocation","当前x:"+xLocation);
-            }
-        }else {//正向
-            if (resetInit) {
-                setTextDistance(textDistance1);
-                if (startLocationDistance < 0) {
-                    startLocationDistance = 0;
-                } else if (startLocationDistance > 1) {
-                    startLocationDistance = 1;
+                    default: //默认一次到头好了
+                        if (contentWidth > xLocation) { //也就是说文字已经到头了  此时停止线程就可以了
+                            stopRoll();
+                        }
+                        break;
                 }
-                xLocation = getWidth() * startLocationDistance;
-                resetInit = false;
-            }
-            switch (repetType) {
-                case REPET_ONCETIME:
+                if (string != null) {   //把文字画出来
+                    canvas.drawText(string, xLocation, getHeight() / 2 + textHeight / 2, paint);
+                    Log.e("xLocation", "当前x:" + xLocation);
+                }
+            } else {//正向
+                if (resetInit) {
+                    setTextDistance(textDistance1);
+                    if (startLocationDistance < 0) {
+                        startLocationDistance = 0;
+                    } else if (startLocationDistance > 1) {
+                        startLocationDistance = 1;
+                    }
+                    xLocation = getWidth() * startLocationDistance;
+                    resetInit = false;
+                }
+                switch (repetType) {
+                    case REPET_ONCETIME:
                         if (contentWidth <= (-xLocation)) {
-                            if(times==repetCounts){
+                            if (times == repetCounts) {
                                 stopRoll();
-                                times=0;
+                                times = 0;
                             }
                             xLocation = getWidth();//也就是说文字已经到头了
                             times++;
                         }
-                    break;
-                case REPET_INTERVAL:
-                    if (contentWidth <= (-xLocation)) {
-                        xLocation = getWidth();//也就是说文字已经到头了
-                    }
-                    break;
+                        break;
+                    case REPET_INTERVAL:
+                        if (contentWidth <= (-xLocation)) {
+                            xLocation = getWidth();//也就是说文字已经到头了
+                        }
+                        break;
 //                case REPET_CONTINUOUS:
 //                    if (xLocation < 0) {
 //                        int beAppend = (int) ((-xLocation) / contentWidth);
@@ -233,16 +251,18 @@ public class MarqueeView extends View implements Runnable {
 //                        }
 //                    } //此处需要判断的xLocation需要加上相应的宽度
 //                    break;
-                default: //默认一次到头好了
-                    if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
-                        stopRoll();
-                    }
-                    break;
+                    default: //默认一次到头好了
+                        if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
+                            stopRoll();
+                        }
+                        break;
+                }
+                yLocation=getHeight() / 2;
             }
-            if (string != null) {   //把文字画出来
-                canvas.drawText(string, xLocation, getHeight() / 2 + textHeight / 2, paint);
-                Log.e("xLocation","当前x:"+xLocation);
-            }
+        }
+        if (string != null) {   //把文字画出来
+            canvas.drawText(string, xLocation, yLocation+ textHeight / 2, paint);
+            Log.e("xLocation", "当前x:" + xLocation);
         }
     }
 
@@ -255,10 +275,21 @@ public class MarqueeView extends View implements Runnable {
         isFlicker = flicker;
     }
 
+    public boolean isBLINK() {
+        return isBLINK;
+    }
+
+    public void setBLINK(boolean BLINK) {
+        isBLINK = BLINK;
+    }
+
     public int getRepetCounts() {
         return repetCounts;
     }
-    /**设置滚动次数*/
+
+    /**
+     * 设置滚动次数
+     */
     public void setRepetCounts(int repetCounts) {
         this.repetCounts = repetCounts;
     }
@@ -278,14 +309,25 @@ public class MarqueeView extends View implements Runnable {
     public void run() {
         while (isRoll && !TextUtils.isEmpty(content)) {
             try {
-                Thread.sleep(mInvalidata);
-                if(isResversable){
-                    xLocation = xLocation + speed;
+                if(isBLINK){
+                    Thread.sleep(mInvalidata);
+                    //x 范围= 0- 宽度  y范围 = view 高度
+                    int x=getWidth()-contentWidth,y= (int) (getHeight()-textHeight/2); //view的宽高
+                    Random r=new Random();
+                    int rX=r.nextInt(Math.abs(x));
+                    int rY= (int) (r.nextInt(Math.abs(y))+textHeight/2);
+                    xLocation = rX;
+                    yLocation=rY;
                 }else {
-                    xLocation = xLocation - speed;
+                    Thread.sleep(mInvalidata);
+                    if (isResversable) {
+                        xLocation = xLocation + speed;
+                    } else {
+                        xLocation = xLocation - speed;
+                    }
+                    if(isFlicker)flagFlicker = !flagFlicker;
                 }
-                flag = !flag;
-                postInvalidate();//每隔20毫秒重绘视图
+                postInvalidate();//每隔n毫秒重绘视图
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -349,8 +391,8 @@ public class MarqueeView extends View implements Runnable {
      * @param isResversable
      */
     public void setReversalble(boolean isResversable) {
-        StringBuilder stringBuiler=new StringBuilder(content);
-        content=stringBuiler.reverse().toString();//文字反向
+        StringBuilder stringBuiler = new StringBuilder(content);
+        content = stringBuiler.reverse().toString();//文字反向
         this.isResversable = isResversable;
         resetInit = true;
         setContent(content);
@@ -359,6 +401,7 @@ public class MarqueeView extends View implements Runnable {
 
     /**
      * 设置文字间距  不过如果内容是List形式的，该方法不适用 ,list的数据源，必须在设置setContent之前调用此方法。
+     *
      * @param textdistance2
      */
     public void setTextDistance(int textdistance2) {
@@ -385,6 +428,7 @@ public class MarqueeView extends View implements Runnable {
 
     /**
      * 计算出一个空格的宽度
+     *
      * @return
      */
     private float getBlacktWidth() {
@@ -409,8 +453,8 @@ public class MarqueeView extends View implements Runnable {
     }
 
     /**
+     * 获取内容高度
      *
-     *获取内容高度
      * @param
      * @return
      */
@@ -431,6 +475,7 @@ public class MarqueeView extends View implements Runnable {
             paint.setColor(getResources().getColor(textColor));//文字颜色值,可以不设定
         }
     }
+
     /**
      * 设置文字颜色
      *
@@ -442,14 +487,15 @@ public class MarqueeView extends View implements Runnable {
             paint.setColor(textColor);//文字颜色值,可以不设定
         }
     }
+
     /**
      * 设置文字透明度
      *
      * @param alpha
      */
     public void setTextAlpha(int alpha) {
-            this.alpha=alpha;
-            paint.setAlpha(alpha);//文字透明度
+        this.alpha = alpha;
+        paint.setAlpha(alpha);//文字透明度
     }
 
     /**
@@ -473,17 +519,24 @@ public class MarqueeView extends View implements Runnable {
     public void setTextSpeed(float speed) {
         this.speed = speed;
     }
+
     /**
      * 设置单位时间内滚动完成 既 单位时间内的速度
      *
      * @param time 时间 单位 秒
      */
     public void setTextTimeSpeed(int time) {
-        // 屏幕宽度/时间=速度
-        int width=getScreenWidthPixels(getContext());
-        time= (int) (time*1000/mInvalidata);
-        double speed=((double)width)/time;
-        setTextSpeed((float) speed);
+        if(isBLINK){
+            setmInvalidata(time*1000);
+            stopRoll();
+            continueRoll();
+        }else {
+            // 屏幕宽度/时间=速度
+            int width = getScreenWidthPixels(getContext());
+            time = (int) (time * 1000 / mInvalidata);
+            double speed = ((double) width) / time;
+            setTextSpeed((float) speed);
+        }
     }
 
     /**
@@ -496,6 +549,7 @@ public class MarqueeView extends View implements Runnable {
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         return dm.widthPixels;
     }
+
     /**
      * |设置滚动的条目内容 ， 集合形式的
      *
@@ -507,9 +561,9 @@ public class MarqueeView extends View implements Runnable {
 
         if (strings != null && strings.size() != 0) {
 
-            for (int i = 0; i <strings.size(); i++) {
+            for (int i = 0; i < strings.size(); i++) {
 
-                temString = temString+strings.get(i) + black_count;
+                temString = temString + strings.get(i) + black_count;
             }
 
         }
@@ -523,14 +577,14 @@ public class MarqueeView extends View implements Runnable {
      * @parambt_control00
      */
     public void setContent(String content2) {
-        if (TextUtils.isEmpty(content2)){
+        if (TextUtils.isEmpty(content2)) {
             return;
         }
-        if(isResversable){
+        if (isResversable) {
             if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
                 xLocation = -contentWidth;//getWidth() * startLocationDistance;
             }
-        }else {
+        } else {
             if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
                 xLocation = getWidth() * startLocationDistance;
             }
@@ -553,23 +607,23 @@ public class MarqueeView extends View implements Runnable {
 //                this.string = this.string + this.content;//根据重复次数去叠加。
 //            }
 //        } else {
-            if(isResversable){
-                if (xLocation > 0 && repetType == REPET_ONCETIME) {
-                    if (xLocation > contentWidth) {
-                        xLocation = -contentWidth;//getWidth() * startLocationDistance;
-                    }
-                }
-            }else {
-                if (xLocation < 0 && repetType == REPET_ONCETIME) {
-                    if (-xLocation > contentWidth) {
-                        xLocation = getWidth() * startLocationDistance;
-                    }
+        if (isResversable) {
+            if (xLocation > 0 && repetType == REPET_ONCETIME) {
+                if (xLocation > contentWidth) {
+                    xLocation = -contentWidth;//getWidth() * startLocationDistance;
                 }
             }
+        } else {
+            if (xLocation < 0 && repetType == REPET_ONCETIME) {
+                if (-xLocation > contentWidth) {
+                    xLocation = getWidth() * startLocationDistance;
+                }
+            }
+        }
 
-            contentWidth = (int) getContentWidth(content);
+        contentWidth = (int) getContentWidth(content);
 
-            this.string = content2;
+        this.string = content2;
 //        }
 
         if (!isRoll) {//如果没有在滚动的话，重新开启线程滚动
@@ -589,6 +643,6 @@ public class MarqueeView extends View implements Runnable {
     }
 
     public void appendContent(String appendContent) {
-      // 追加新的 公告
+        // 追加新的 公告
     }
 }

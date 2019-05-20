@@ -5,6 +5,7 @@
 versionCode 2
 versionName "1.1"
 1.增加跑马灯单次时间（单位时间内的速度 单位秒）功能
+2.增加闪屏功能（随机出现在屏幕中）
 
 2019.05.18
 versionCode 2

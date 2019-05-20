@@ -116,7 +116,7 @@
         <item>10</item>
     </string-array>
     <string-array name="spinner_space" >
-        <item>间距选择</item>
+        <item>间距</item>
         <item>0</item>
         <item>5</item>
         <item>10</item>

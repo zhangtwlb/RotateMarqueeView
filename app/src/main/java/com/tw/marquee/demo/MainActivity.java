@@ -1,9 +1,7 @@
 package com.tw.marquee.demo;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -15,10 +13,11 @@ import com.tw.marquee.lib.MarqueeView;
 public class MainActivity extends AppCompatActivity {
 
     private MarqueeView mV3;
-    private Button btStop,bt_control_continue,bt_control_add,bt_control_flicker,bt_control_reversal;
+    private Button btStop,bt_control_continue,bt_control_add,bt_control_flicker,bt_control_reversal,bt_control_blink;
     private EditText ed_text;
     private Spinner bt_control_color,bt_control_size,bt_control_speed,bt_control_from,bt_control_alpha,bt_control_count,bt_control_repeat_count,bt_control_space;
     private boolean flag,flagReversal;
+    private boolean flagBlink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +61,15 @@ public class MainActivity extends AppCompatActivity {
                 mV3.setReversalble(flagReversal);
             }
         });
+        bt_control_blink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flagBlink=!flagBlink;
+                mV3.setBLINK(flagBlink);
+            }
+        });
+
+
         bt_control_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
                                        int position, long id) {
                 String str=parent.getItemAtPosition(position).toString();
                 if(position>0){
-
                     mV3.setTextTimeSpeed(Integer.parseInt(str));//0-255
                 }
 
@@ -193,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         bt_control_alpha = findViewById(R.id.bt_control_alpha);
         bt_control_count = findViewById(R.id.bt_control_count);
         bt_control_space = findViewById(R.id.bt_control_space);
+        bt_control_blink = findViewById(R.id.bt_control_blink);
         bt_control_continue = findViewById(R.id.bt_control_continue);
         btStop = findViewById(R.id.bt_control_stop);
         mV3 = ((MarqueeView) findViewById(R.id.mv_main3));

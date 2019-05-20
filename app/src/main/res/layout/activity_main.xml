@@ -90,6 +90,7 @@
             android:id="@+id/bt_control_space"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:tooltipText="@string/app_name"
             android:entries="@array/spinner_space" />
 
@@ -117,6 +118,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="反转" />
+        <Button
+            android:id="@+id/bt_control_blink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="闪现" />
     </LinearLayout>
 
 
