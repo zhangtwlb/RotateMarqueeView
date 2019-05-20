@@ -82,6 +82,15 @@
         <item>90</item>
         <item>-90</item>
     </string-array>
+    <string-array name="spinner_location" >
+        <item>Y轴位置</item>
+        <item>TOP</item>
+        <item>CENTER</item>
+        <item>BOTTOM</item>
+
+        <item>LEFT</item>
+        <item>RIGTH</item>
+    </string-array>
     <string-array name="spinner_alpha" >
         <item>透明度</item>
         <item>0</item>
@@ -116,11 +125,11 @@
         <item>10</item>
     </string-array>
     <string-array name="spinner_space" >
-        <item>间距</item>
-        <item>0</item>
+        <item>停留几秒</item>
         <item>5</item>
         <item>10</item>
-        <item>15</item>
         <item>20</item>
+        <item>30</item>
+        <item>60</item>
     </string-array>
 </resources>

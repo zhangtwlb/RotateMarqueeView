@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -42,7 +43,20 @@ public class MarqueeView extends View implements Runnable {
     private boolean isClickStop = false;//点击是否暂停
     private boolean isResetLocation = true;//默认为true
     private float xLocation = 0;//文本的x坐标
-    private float yLocation=0;//文本的y坐标
+    private float yLocation = 0;//文本的y坐标
+    public static final int LOCATION_TOP = 1001;//
+    public static final int LOCATION_BOTTOM = 1002;//
+    public static final int LOCATION_CENTER = 1003;//
+    public static final int LOCATION_LEFT = 1004;//
+    public static final int LOCATION_RIGHT = 1005;//
+
+    public static final int LOCATION_RIGHT_TOP = 1006;//
+    public static final int LOCATION_RIGHT_BOTTOM = 1007;//
+    public static final int LOCATION_LEFT_TOP = 1008;//
+    public static final int LOCATION_LEFT_BOTTOM = 1009;//
+
+    private int currentLocation = LOCATION_TOP;
+
     private int contentWidth;//内容的宽度
     private boolean isRoll = false;//是否继续滚动
     private float oneBlack_width;//空格的宽度
@@ -57,9 +71,15 @@ public class MarqueeView extends View implements Runnable {
     private boolean flagFlicker;//闪烁置位开关
     private boolean isFlicker;//闪烁标识
     private boolean isBLINK;//闪现标识 （闪现在屏幕某个随机位置）
+    private boolean isRandom;//闪现模式下的 是否随机开关
     private boolean isResversable;//反向标识
     private int times;//次数
     private long mInvalidata = 20;//刷新界面的频率  单位毫秒
+    private long mBLINKInvalidata = 1*1000;//闪现间隔时间 单位毫秒
+    private long mBLINKStay = 5*1000;//闪现停留时间 单位毫秒
+    private long tempBLINKStay =0;//闪现停留时间临时变量 单位毫秒
+    private int currenrLocationTag = 0;
+    private int padding = 40;//间距
 
 
     public MarqueeView(Context context) {
@@ -75,6 +95,15 @@ public class MarqueeView extends View implements Runnable {
         initattrs(attrs);
         initpaint();
         initClick();
+        initData();
+    }
+
+    private void initData() {
+        locationModeList.add(LOCATION_CENTER);
+        locationModeList.add(LOCATION_LEFT_TOP);
+        locationModeList.add(LOCATION_RIGHT_TOP);
+        locationModeList.add(LOCATION_RIGHT_BOTTOM);
+        locationModeList.add(LOCATION_LEFT_BOTTOM);
     }
 
     private void initClick() {
@@ -134,11 +163,11 @@ public class MarqueeView extends View implements Runnable {
         if (isBLINK) {//是 闪现
             switch (repetType) {
                 case REPET_ONCETIME://n次后停止
-                        if (times == repetCounts) {
-                            stopRoll();
-                            times = 0;
-                        }
-                        times++;
+                    if (times == repetCounts) {
+                        stopRoll();
+                        times = 0;
+                    }
+                    times++;
                     break;
                 case REPET_INTERVAL://无限循环
                     break;
@@ -201,10 +230,6 @@ public class MarqueeView extends View implements Runnable {
                         }
                         break;
                 }
-                if (string != null) {   //把文字画出来
-                    canvas.drawText(string, xLocation, getHeight() / 2 + textHeight / 2, paint);
-                    Log.e("xLocation", "当前x:" + xLocation);
-                }
             } else {//正向
                 if (resetInit) {
                     setTextDistance(textDistance1);
@@ -248,17 +273,28 @@ public class MarqueeView extends View implements Runnable {
                         }
                         break;
                 }
-                yLocation=getHeight() / 2;
             }
         }
         if (string != null) {   //把文字画出来
-            canvas.drawText(string, xLocation, yLocation+ textHeight / 2, paint);
-//            Log.e("xLocation", "当前x:" + xLocation);
+            canvas.drawText(string, xLocation, yLocation + textHeight / 2 + padding, paint);
         }
     }
 
-    public void setmInvalidata(long mInvalidata) {
-        this.mInvalidata = mInvalidata;
+
+    public long getmBLINKInvalidata() {
+        return mBLINKInvalidata;
+    }
+
+    public void setmBLINKInvalidata(long mBLINKInvalidata) {
+        this.mBLINKInvalidata = mBLINKInvalidata;
+    }
+
+    public long getmBLINKStay() {
+        return mBLINKStay;
+    }
+
+    public void setmBLINKStay(long mBLINKStay) {
+        this.mBLINKStay = mBLINKStay*1000;
     }
 
     public boolean isFlicker() {
@@ -281,6 +317,10 @@ public class MarqueeView extends View implements Runnable {
         return repetCounts;
     }
 
+    public void setPadding(int padding) {
+        this.padding = padding;
+    }
+
     /**
      * 设置滚动次数
      */
@@ -298,28 +338,111 @@ public class MarqueeView extends View implements Runnable {
         this.textAngle = textAngle;
     }
 
+    public void setXYLocation(int x, int y) {
+        xLocation = x;
+        yLocation = y;
+    }
+
+    /***
+     * 接收集合形式的位置 （集合 pos）
+     * */
+    List<Integer> locationModeList = new ArrayList<Integer>() {
+    };
+
+    public void setXYLocationByModeList(List<Integer> locationModeList) {
+        this.locationModeList = locationModeList;
+    }
+
+    public void setXYLocationByMode() {
+        if(currenrLocationTag>=locationModeList.size()){
+            currenrLocationTag=0;
+        }
+        setXYLocationByMode(locationModeList.get(currenrLocationTag));
+    }
+
+    public void setXYLocationByMode(int currentLocation) {
+        if (isBLINK) {
+            switch (currentLocation) {
+                case LOCATION_TOP://上
+                    setXYLocation(0, 0);
+                    break;
+                case LOCATION_CENTER://zhongjian
+                    setXYLocation(getWidth() / 2-contentWidth/2, getHeight() / 2);
+                    break;
+                case LOCATION_BOTTOM://
+                    setXYLocation(0,getHeight() - 2 * padding);
+                    break;
+                case LOCATION_LEFT:
+                    setXYLocation( padding, getHeight() / 2);
+                    break;
+                case LOCATION_LEFT_TOP:
+                    setXYLocation(padding, 0);
+                    break;
+                case LOCATION_LEFT_BOTTOM:
+                    setXYLocation( padding,getHeight() - 2 * padding);
+                    break;
+                case LOCATION_RIGHT:
+                    setXYLocation(getWidth() - contentWidth-padding, getHeight() / 2);
+                    break;
+                case LOCATION_RIGHT_TOP:
+                    setXYLocation(getWidth() - contentWidth-padding, 0);
+                    break;
+                case LOCATION_RIGHT_BOTTOM:
+                    setXYLocation(getWidth() - contentWidth-padding, getHeight() - 2 * padding);
+                    break;
+            }
+        } else {
+            switch (currentLocation) {
+                case LOCATION_TOP:
+                    setXYLocation(0, 0);
+                    break;
+                case LOCATION_CENTER:
+                    setXYLocation(getWidth() / 2, getHeight() / 2);
+                    break;
+                case LOCATION_BOTTOM:
+                    setXYLocation(0, (int) (getHeight() - 2 * padding));
+                    break;
+            }
+        }
+    }
+
+    public boolean isRandom() {
+        return isRandom;
+    }
+
+    public void setRandom(boolean random) {
+        isRandom = random;
+    }
 
     @Override
     public void run() {
         while (isRoll && !TextUtils.isEmpty(content)) {
             try {
-                if(isBLINK){
-                    Thread.sleep(mInvalidata);
+                if (isBLINK) {
+                    Thread.sleep(mBLINKInvalidata);
                     //x 范围= 0- 宽度  y范围 = view 高度
-                    int x=getWidth()-contentWidth,y= (int) (getHeight()-textHeight/2); //view的宽高
-                    Random r=new Random();
-                    int rX=r.nextInt(Math.abs(x));
-                    int rY= (int) (r.nextInt(Math.abs(y))+textHeight/2);
-                    xLocation = rX;
-                    yLocation=rY;
-                }else {
+                    int x = getWidth() - contentWidth, y = (int) (getHeight() - textHeight / 2); //view的宽高
+                    if (isRandom) {
+                        Random r = new Random();
+                        xLocation = r.nextInt(Math.abs(x));
+                        yLocation = (int) (r.nextInt(Math.abs(y)) + textHeight / 2);
+                    } else {
+                        if(tempBLINKStay>=mBLINKStay){//设置停留时间
+                            setXYLocationByMode();
+                            currenrLocationTag++;
+                            tempBLINKStay=0;
+                        }else {
+                            tempBLINKStay+=mBLINKInvalidata;
+                        }
+                    }
+                } else {
                     Thread.sleep(mInvalidata);
                     if (isResversable) {
                         xLocation = xLocation + speed;
                     } else {
                         xLocation = xLocation - speed;
                     }
-                    if(isFlicker)flagFlicker = !flagFlicker;
+                    if (isFlicker) flagFlicker = !flagFlicker;
                 }
                 postInvalidate();//每隔n毫秒重绘视图
             } catch (InterruptedException e) {
@@ -479,8 +602,8 @@ public class MarqueeView extends View implements Runnable {
         if (textColorString.contains("#")) {
             this.textColor = Color.parseColor(textColorString);
             paint.setColor(textColor);//文字颜色值,可以不设定
-        }else {
-            Log.e(TAG,"颜色值格式错误！！");
+        } else {
+            Log.e(TAG, "颜色值格式错误！！");
         }
     }
 
@@ -519,14 +642,14 @@ public class MarqueeView extends View implements Runnable {
     /**
      * 设置单位时间内滚动完成 既 单位时间内的速度
      *
+     * isBLINK 闪现模式
      * @param time 时间 单位 秒
      */
     public void setTextTimeSpeed(int time) {
-        if(isBLINK){
-            setmInvalidata(time*1000);
-        }else {
+        if (isBLINK) {
+            setmBLINKInvalidata(time * 1000);
+        } else {
             // 屏幕宽度/时间=速度
-            setmInvalidata(20);
             int width = getScreenWidthPixels(getContext());
             time = (int) (time * 1000 / mInvalidata);
             double speed = ((double) width) / time;
