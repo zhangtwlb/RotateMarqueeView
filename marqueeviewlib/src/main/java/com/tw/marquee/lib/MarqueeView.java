@@ -478,7 +478,7 @@ public class MarqueeView extends View implements Runnable {
     public void setTextColorByString(String textColorString) {
         if (textColorString.contains("#")) {
             this.textColor = Color.parseColor(textColorString);
-            setTextColor(textColor);//文字颜色值,可以不设定
+            paint.setColor(textColor);//文字颜色值,可以不设定
         }else {
             Log.e(TAG,"颜色值格式错误！！");
         }
@@ -524,15 +524,16 @@ public class MarqueeView extends View implements Runnable {
     public void setTextTimeSpeed(int time) {
         if(isBLINK){
             setmInvalidata(time*1000);
-            stopRoll();
-            continueRoll();
         }else {
             // 屏幕宽度/时间=速度
+            setmInvalidata(20);
             int width = getScreenWidthPixels(getContext());
             time = (int) (time * 1000 / mInvalidata);
             double speed = ((double) width) / time;
             setTextSpeed((float) speed);
         }
+        stopRoll();
+        continueRoll();
     }
 
     /**

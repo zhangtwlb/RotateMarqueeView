@@ -55,13 +55,6 @@
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
         <Spinner
-            android:id="@+id/bt_control_from"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:tooltipText="@string/app_name"
-            android:entries="@array/spinner_from" />
-        <Spinner
             android:id="@+id/bt_control_alpha"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,7 +78,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
+        <Spinner
+            android:id="@+id/bt_control_from"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:tooltipText="@string/app_name"
+            android:entries="@array/spinner_from" />
         <Spinner
             android:id="@+id/bt_control_space"
             android:layout_width="wrap_content"
@@ -94,6 +95,11 @@
             android:tooltipText="@string/app_name"
             android:entries="@array/spinner_space" />
 
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
         <Button
             android:id="@+id/bt_control_continue"
             android:layout_width="wrap_content"
@@ -131,7 +137,7 @@
         android:id="@+id/mv_main3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         app:marqueeview_text_size="15"
         app:marqueeview_text_angle="0"
         android:background="#804F5151"/>
