@@ -42,33 +42,25 @@ public class MarqueeView extends View implements Runnable {
     private boolean isClickStop = false;//点击是否暂停
     private boolean isResetLocation = true;//默认为true
     private float xLocation = 0;//文本的x坐标
-    private float yLocation;//文本的y坐标
+    private float yLocation=0;//文本的y坐标
     private int contentWidth;//内容的宽度
-
     private boolean isRoll = false;//是否继续滚动
     private float oneBlack_width;//空格的宽度
-
     private TextPaint paint;//画笔
     private Rect rect;
-
     private int repetCount = 0, repetCounts = 1;//
     private boolean resetInit = true;
-
     private Thread thread;
     private String content = "";
-
     private float textHeight;
     private int alpha = 255;//默认透明度
-    private boolean flagFlicker;
+    private boolean flagFlicker;//闪烁置位开关
     private boolean isFlicker;//闪烁标识
     private boolean isBLINK;//闪现标识 （闪现在屏幕某个随机位置）
     private boolean isResversable;//反向标识
     private int times;//次数
     private long mInvalidata = 20;//刷新界面的频率  单位毫秒
 
-    public void setmInvalidata(long mInvalidata) {
-        this.mInvalidata = mInvalidata;
-    }
 
     public MarqueeView(Context context) {
         this(context, null);
@@ -141,18 +133,17 @@ public class MarqueeView extends View implements Runnable {
         super.onDraw(canvas);
         if (isBLINK) {//是 闪现
             switch (repetType) {
-                case REPET_ONCETIME:
+                case REPET_ONCETIME://n次后停止
                         if (times == repetCounts) {
                             stopRoll();
                             times = 0;
                         }
                         times++;
                     break;
-                case REPET_INTERVAL:
+                case REPET_INTERVAL://无限循环
                     break;
             }
         } else {
-            //旋转
             int width = getMeasuredWidth(), height = getMeasuredHeight();
             canvas.rotate(textAngle, width / 2, height / 2);
             if (isFlicker) {//是否开启闪烁
@@ -204,7 +195,7 @@ public class MarqueeView extends View implements Runnable {
 //                        Log.e(TAG, "onDraw: ---" + contentWidth + "----"+string+"----" + (xLocation) + "------" + beAppend);
 //                    } //此处需要判断的xLocation需要加上相应的宽度
 //                    break;
-                    default: //默认一次到头好了
+                    default: //默认一次到头
                         if (contentWidth > xLocation) { //也就是说文字已经到头了  此时停止线程就可以了
                             stopRoll();
                         }
@@ -251,7 +242,7 @@ public class MarqueeView extends View implements Runnable {
 //                        }
 //                    } //此处需要判断的xLocation需要加上相应的宽度
 //                    break;
-                    default: //默认一次到头好了
+                    default: //默认一次到头
                         if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
                             stopRoll();
                         }
@@ -262,10 +253,13 @@ public class MarqueeView extends View implements Runnable {
         }
         if (string != null) {   //把文字画出来
             canvas.drawText(string, xLocation, yLocation+ textHeight / 2, paint);
-            Log.e("xLocation", "当前x:" + xLocation);
+//            Log.e("xLocation", "当前x:" + xLocation);
         }
     }
 
+    public void setmInvalidata(long mInvalidata) {
+        this.mInvalidata = mInvalidata;
+    }
 
     public boolean isFlicker() {
         return isFlicker;
@@ -393,7 +387,7 @@ public class MarqueeView extends View implements Runnable {
     public void setReversalble(boolean isResversable) {
         StringBuilder stringBuiler = new StringBuilder(content);
         content = stringBuiler.reverse().toString();//文字反向
-        this.isResversable = isResversable;
+        this.isResversable = isResversable;//方向反向
         resetInit = true;
         setContent(content);
     }
@@ -484,7 +478,9 @@ public class MarqueeView extends View implements Runnable {
     public void setTextColorByString(String textColorString) {
         if (textColorString.contains("#")) {
             this.textColor = Color.parseColor(textColorString);
-            paint.setColor(textColor);//文字颜色值,可以不设定
+            setTextColor(textColor);//文字颜色值,可以不设定
+        }else {
+            Log.e(TAG,"颜色值格式错误！！");
         }
     }
 
