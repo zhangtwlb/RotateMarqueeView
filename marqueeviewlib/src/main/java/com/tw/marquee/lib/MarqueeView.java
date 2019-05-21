@@ -28,7 +28,7 @@ public class MarqueeView extends View implements Runnable {
     private String string;//最终绘制的文本
     private float speed = 1;//移动速度
     private int textColor = Color.BLACK;//文字颜色,默认黑色
-    private float textSize = 12, textAngle = 45;//文字颜色,默认黑色
+    private float textSize = 12, textAngle = 0;//文字颜色,默认黑色 //角度
     private int textdistance;//
     private int textDistance1 = 10;//item间距，dp单位
     private String black_count = "";//间距转化成空格距离
@@ -55,8 +55,6 @@ public class MarqueeView extends View implements Runnable {
     public static final int LOCATION_LEFT_TOP = 1008;//
     public static final int LOCATION_LEFT_BOTTOM = 1009;//
 
-    private int currentLocation = LOCATION_TOP;
-
     private int contentWidth;//内容的宽度
     private boolean isRoll = false;//是否继续滚动
     private float oneBlack_width;//空格的宽度
@@ -77,7 +75,7 @@ public class MarqueeView extends View implements Runnable {
     private long mInvalidata = 20;//刷新界面的频率  单位毫秒
     private long mBLINKInvalidata = 1*1000;//闪现间隔时间 单位毫秒
     private long mBLINKStay = 5*1000;//闪现停留时间 单位毫秒
-    private long tempBLINKStay =0;//闪现停留时间临时变量 单位毫秒
+    private long tempBLINKStay =0;//闪现停留时间临时变量
     private int currenrLocationTag = 0;
     private int padding = 40;//间距
 
@@ -214,16 +212,6 @@ public class MarqueeView extends View implements Runnable {
                             xLocation = -contentWidth;//也就是说文字已经到头了
                         }
                         break;
-//                case REPET_CONTINUOUS:
-//                    if (xLocation > xLocation-getWidth()) {
-//                        int beAppend = (int) ((xLocation-getWidth()) /contentWidth);
-//                        if (beAppend >= repetCount) {
-//                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
-//                            string = string + content;
-//                        }
-//                        Log.e(TAG, "onDraw: ---" + contentWidth + "----"+string+"----" + (xLocation) + "------" + beAppend);
-//                    } //此处需要判断的xLocation需要加上相应的宽度
-//                    break;
                     default: //默认一次到头
                         if (contentWidth > xLocation) { //也就是说文字已经到头了  此时停止线程就可以了
                             stopRoll();
@@ -257,16 +245,6 @@ public class MarqueeView extends View implements Runnable {
                             xLocation = getWidth();//也就是说文字已经到头了
                         }
                         break;
-//                case REPET_CONTINUOUS:
-//                    if (xLocation < 0) {
-//                        int beAppend = (int) ((-xLocation) / contentWidth);
-//                        Log.e(TAG, "onDraw: ---" + contentWidth + "--------" + (-xLocation) + "------" + beAppend);
-//                        if (beAppend >= repetCount) {
-//                            repetCount++; //也就是说文字已经到头了 xLocation = speed;//这个方法有问题，所以采取了追加字符串的 方法
-//                            string = string + content;
-//                        }
-//                    } //此处需要判断的xLocation需要加上相应的宽度
-//                    break;
                     default: //默认一次到头
                         if (contentWidth < (-xLocation)) { //也就是说文字已经到头了  此时停止线程就可以了
                             stopRoll();
@@ -400,7 +378,7 @@ public class MarqueeView extends View implements Runnable {
                     setXYLocation(getWidth() / 2, getHeight() / 2);
                     break;
                 case LOCATION_BOTTOM:
-                    setXYLocation(0, (int) (getHeight() - 2 * padding));
+                    setXYLocation(0,getHeight() - 2 * padding);
                     break;
             }
         }
@@ -691,6 +669,13 @@ public class MarqueeView extends View implements Runnable {
     }
 
 
+    /***
+     * 设置闪现模式下的内容
+     * */
+    public void setBlinkContent(String text,boolean isBLINK){
+        setBLINK(isBLINK);
+        setContent(text);
+    }
     /**
      * 设置滚动的条目内容  字符串形式的
      *
@@ -700,56 +685,50 @@ public class MarqueeView extends View implements Runnable {
         if (TextUtils.isEmpty(content2)) {
             return;
         }
-        if (isResversable) {
-            if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
-                xLocation = -contentWidth;//getWidth() * startLocationDistance;
-            }
-        } else {
-            if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
-                xLocation = getWidth() * startLocationDistance;
-            }
-        }
-
-        if (!content2.endsWith(black_count)) {
-            content2 = content2 + black_count;//避免没有后缀
-        }
-        this.content = content2;
-
-        //这里需要计算宽度啦，当然要根据模式来搞
-//        if (repetType == REPET_CONTINUOUS) {
-//         //如果说是循环的话，则需要计算 文本的宽度 ，然后再根据屏幕宽度 ， 看能一个屏幕能盛得下几个文本
-//            contentWidth = (int) (getContentWidth(content) + textdistance);//可以理解为一个单元内容的长度
-//            //从0 开始计算重复次数了， 否则到最后 会跨不过这个坎而消失。
-//            repetCount = 0;
-//            int contentCount = (getWidth() / contentWidth) + 2;
-//            this.string = "";
-//            for (int i = 0; i <= contentCount; i++) {
-//                this.string = this.string + this.content;//根据重复次数去叠加。
-//            }
-//        } else {
-        if (isResversable) {
-            if (xLocation > 0 && repetType == REPET_ONCETIME) {
-                if (xLocation > contentWidth) {
+        if(isBLINK){
+            xLocation = 0;
+            yLocation=0;
+        }else {
+            if (isResversable) {
+                if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
                     xLocation = -contentWidth;//getWidth() * startLocationDistance;
                 }
-            }
-        } else {
-            if (xLocation < 0 && repetType == REPET_ONCETIME) {
-                if (-xLocation > contentWidth) {
+            } else {
+                if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
                     xLocation = getWidth() * startLocationDistance;
                 }
             }
         }
 
+
+        if (!content2.endsWith(black_count)) {
+            content2 = content2 + black_count;//避免没有后缀
+        }
+        this.content = content2;
+        if(isBLINK){
+            xLocation = 0;
+            yLocation=0;
+        }else {
+            if (isResversable) {
+                if (xLocation > 0 && repetType == REPET_ONCETIME) {
+                    if (xLocation > contentWidth) {
+                        xLocation = -contentWidth;
+                    }
+                }
+            } else {
+                if (xLocation < 0 && repetType == REPET_ONCETIME) {
+                    if (-xLocation > contentWidth) {
+                        xLocation = getWidth() * startLocationDistance;
+                    }
+                }
+            }
+        }
+
         contentWidth = (int) getContentWidth(content);
-
         this.string = content2;
-//        }
-
         if (!isRoll) {//如果没有在滚动的话，重新开启线程滚动
             continueRoll();
         }
-
 
     }
 
