@@ -490,7 +490,6 @@ public class MarqueeView extends View implements Runnable {
         content = stringBuiler.reverse().toString();//文字反向
         this.isResversable = isResversable;//方向反向
         resetInit = true;
-        setContent(content);
     }
 
 
