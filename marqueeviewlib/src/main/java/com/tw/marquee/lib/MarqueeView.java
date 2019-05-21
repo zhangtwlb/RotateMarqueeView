@@ -426,8 +426,8 @@ public class MarqueeView extends View implements Runnable {
                     Thread.sleep(mInvalidata);
                     //x 范围= 0- 宽度  y范围 = view 高度
                     double h_wbi=((double) getHeight())/getWidth();//0.8
-                    double buchangX=speed;
-                    double buchangY=speed*h_wbi;
+                    double buchangX=speed/2;
+                    double buchangY=buchangX*h_wbi;
                     int endx = getWidth(), endy =getHeight(); //view的宽高
                     switch (currenrLocation){
                         case LOCATION_LEFT_TOP://左上->右下
