@@ -82,6 +82,15 @@
         <item>90</item>
         <item>-90</item>
     </string-array>
+    <string-array name="spinner_from_translation" >
+        <item>平移方向</item>
+        <item>LEFT_TOP-RIGHT_BOTTOM</item>
+        <item>LEFT_BOTTOM-RIGHT_TOP</item>
+        <item>RIGHT_BOTTOM-LEFT_TOP</item>
+        <item>RIGHT_TOP-LEFT_BOTTOM</item>
+        <item>TOP-BOTTOM</item>
+        <item>BOTTOM-TOP</item>
+    </string-array>
     <string-array name="spinner_location" >
         <item>Y轴位置</item>
         <item>TOP</item>

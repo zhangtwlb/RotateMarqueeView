@@ -54,7 +54,7 @@ public class MarqueeView extends View implements Runnable {
     public static final int LOCATION_RIGHT_BOTTOM = 1007;//
     public static final int LOCATION_LEFT_TOP = 1008;//
     public static final int LOCATION_LEFT_BOTTOM = 1009;//
-
+    private int currenrLocation=LOCATION_LEFT_TOP;
     private int contentWidth;//内容的宽度
     private boolean isRoll = false;//是否继续滚动
     private float oneBlack_width;//空格的宽度
@@ -67,7 +67,8 @@ public class MarqueeView extends View implements Runnable {
     private float textHeight;
     private int alpha = 255;//默认透明度
     private boolean flagFlicker;//闪烁置位开关
-    private boolean isFlicker;//闪烁标识
+    private boolean isFlicker;//闪烁标识D
+    private boolean isDisplacement;//平滑位移标识 （两点之间平行位移）
     private boolean isBLINK;//闪现标识 （闪现在屏幕某个随机位置）
     private boolean isRandom;//闪现模式下的 是否随机开关
     private boolean isResversable;//反向标识
@@ -392,6 +393,14 @@ public class MarqueeView extends View implements Runnable {
         isRandom = random;
     }
 
+    public boolean isDisplacement() {
+        return isDisplacement;
+    }
+
+    public void setDisplacement(boolean displacement) {
+        isDisplacement = displacement;
+    }
+
     @Override
     public void run() {
         while (isRoll && !TextUtils.isEmpty(content)) {
@@ -413,6 +422,53 @@ public class MarqueeView extends View implements Runnable {
                             tempBLINKStay+=mBLINKInvalidata;
                         }
                     }
+                }else if(isDisplacement){
+                    Thread.sleep(mInvalidata);
+                    //x 范围= 0- 宽度  y范围 = view 高度
+                    double h_wbi=((double) getHeight())/getWidth();//0.8
+                    double buchangX=10;
+                    double buchangY=10*h_wbi;
+                    int endx = getWidth(), endy =getHeight(); //view的宽高
+                    switch (currenrLocation){
+                        case LOCATION_LEFT_TOP://左上->右下
+                            xLocation+=buchangX;yLocation+=buchangY;
+                            if(xLocation>endx||yLocation>endy){
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                        case LOCATION_LEFT_BOTTOM://左下->右上
+                            xLocation+=buchangX;yLocation-=buchangY;
+                            if(xLocation>endx||yLocation<=0){
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                        case LOCATION_RIGHT_TOP://右上->左下
+                            xLocation-=buchangX;yLocation+=buchangY;
+                            if(xLocation<=0||yLocation>endy){
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                        case LOCATION_RIGHT_BOTTOM://右下->左上
+                            xLocation-=buchangX;yLocation-=buchangY;
+                            if(xLocation<0||yLocation<0){
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                            case LOCATION_BOTTOM://下->上
+                             yLocation-=buchangY;
+                            if(yLocation<0){
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                            case LOCATION_TOP://上->下
+                             yLocation+=buchangY;
+                            if(yLocation>endy){
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                    }
+                    setXYLocation((int) xLocation,(int) yLocation);
+                    Log.e(TAG,"x="+xLocation+"&y="+yLocation);
                 } else {
                     Thread.sleep(mInvalidata);
                     if (isResversable) {
@@ -468,6 +524,35 @@ public class MarqueeView extends View implements Runnable {
      */
     private void setClickStop(boolean isClickStop) {
         this.isClickStop = isClickStop;
+    }
+
+    /***
+     *  设置初始位置
+     *
+     * */
+    public void setPosByTag(int currenrLocation){
+        this.currenrLocation=currenrLocation;
+        int endx = getWidth(), endy = getHeight(); //view的宽高
+        switch (currenrLocation){
+            case LOCATION_LEFT_TOP:
+                xLocation=0;yLocation=0;
+                break;
+            case LOCATION_LEFT_BOTTOM:
+                xLocation=0;yLocation=endy;
+                break;
+            case LOCATION_RIGHT_TOP:
+                xLocation=endx;yLocation=0;
+                break;
+            case LOCATION_RIGHT_BOTTOM:
+                xLocation=endx;yLocation=endy;
+                break;
+            case LOCATION_BOTTOM:
+                xLocation=endx/2-contentWidth/2;yLocation=endy;
+                break;
+            case LOCATION_TOP:
+                xLocation=endx/2-contentWidth/2;yLocation=0;
+                break;
+        }
     }
 
 

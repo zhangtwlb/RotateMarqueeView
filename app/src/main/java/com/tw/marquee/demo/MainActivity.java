@@ -16,11 +16,12 @@ import com.tw.marquee.lib.MarqueeView;
 public class MainActivity extends AppCompatActivity {
 
     private MarqueeView mV3;
-    private Button btStop, bt_control_continue, bt_control_add, bt_control_flicker, bt_control_reversal, bt_control_blink;
+    private Button btStop, bt_control_continue, bt_control_add, bt_control_flicker, bt_control_reversal, bt_control_blink,bt_control_open_translation;
     private EditText ed_text;
-    private Spinner bt_control_color, bt_control_size, bt_control_speed, bt_control_from, bt_control_alpha, bt_control_count, bt_control_repeat_count, bt_control_space, bt_control_location;
+    private Spinner bt_control_color, bt_control_size, bt_control_speed, bt_control_from,bt_control_from_translation, bt_control_alpha, bt_control_count, bt_control_repeat_count, bt_control_space, bt_control_location;
     private boolean flag, flagReversal;
     private boolean flagBlink;
+    private boolean flagDisp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
                 mV3.setBLINK(flagBlink);
             }
         });
+        bt_control_open_translation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flagDisp = !flagDisp;
+                mV3.setDisplacement(flagDisp);
+            }
+        });
 
 
         bt_control_add.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +122,41 @@ public class MainActivity extends AppCompatActivity {
                                        int position, long id) {
                 String str = parent.getItemAtPosition(position).toString();
                 if (position > 0) mV3.setTextAngle(Integer.parseInt(str));//0-255
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // TODO Auto-generated method stub
+            }
+        });
+        //平移方向
+        bt_control_from_translation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String str = parent.getItemAtPosition(position).toString();
+                if (position > 0){
+                    switch (str) {
+                        case "LEFT_TOP-RIGHT_BOTTOM":
+                            mV3.setPosByTag(MarqueeView.LOCATION_LEFT_TOP);
+                            break;
+                        case "LEFT_BOTTOM-RIGHT_TOP":
+                            mV3.setPosByTag(MarqueeView.LOCATION_LEFT_BOTTOM);
+                            break;
+                        case "RIGHT_BOTTOM-LEFT_TOP":
+                            mV3.setPosByTag(MarqueeView.LOCATION_RIGHT_BOTTOM);
+                            break;
+                        case "RIGHT_TOP-LEFT_BOTTOM":
+                            mV3.setPosByTag(MarqueeView.LOCATION_RIGHT_TOP);
+                            break;
+                            case "TOP-BOTTOM":
+                            mV3.setPosByTag(MarqueeView.LOCATION_TOP);
+                            break;
+                            case "BOTTOM-TOP":
+                            mV3.setPosByTag(MarqueeView.LOCATION_BOTTOM);
+                            break;
+                    }
+                }
             }
 
             @Override
@@ -233,11 +276,13 @@ public class MainActivity extends AppCompatActivity {
         bt_control_size = findViewById(R.id.bt_control_size);
         bt_control_location = findViewById(R.id.bt_control_location);
         bt_control_speed = findViewById(R.id.bt_control_speed);
+        bt_control_from_translation = findViewById(R.id.bt_control_from_translation);
         bt_control_from = findViewById(R.id.bt_control_from);
         bt_control_alpha = findViewById(R.id.bt_control_alpha);
         bt_control_count = findViewById(R.id.bt_control_count);
         bt_control_space = findViewById(R.id.bt_control_space);
         bt_control_blink = findViewById(R.id.bt_control_blink);
+        bt_control_open_translation = findViewById(R.id.bt_control_open_translation);
         bt_control_continue = findViewById(R.id.bt_control_continue);
         btStop = findViewById(R.id.bt_control_stop);
         mV3 = ((MarqueeView) findViewById(R.id.mv_main3));
