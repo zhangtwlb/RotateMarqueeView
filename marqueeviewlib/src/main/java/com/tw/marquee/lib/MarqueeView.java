@@ -735,7 +735,7 @@ public class MarqueeView extends View implements Runnable {
                     width = eY;
                     break;
             }
-            int aTime = (int) (time * 1000 / mInvalidata);
+            double aTime = time * 1000 / mInvalidata;
             double speed = width / aTime;
             setTextSpeed((float) speed);
 
@@ -807,9 +807,7 @@ public class MarqueeView extends View implements Runnable {
             xLocation = 0;
             yLocation = 0;
         } else if(isDisplacement){
-            xLocation = getWidth()/2-contentWidth/2;
-            yLocation = 0;
-        }else {
+        } else {
             if (isResversable) {
                 if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
                     xLocation = -contentWidth;//getWidth() * startLocationDistance;
@@ -829,9 +827,7 @@ public class MarqueeView extends View implements Runnable {
             xLocation = 0;
             yLocation = 0;
         } else if(isDisplacement){
-            xLocation = getWidth()/2-contentWidth/2;
-            yLocation = 0;
-        }else {
+        } else {
             if (isResversable) {
                 if (xLocation > 0 && repetType == REPET_ONCETIME) {
                     if (xLocation > contentWidth) {
