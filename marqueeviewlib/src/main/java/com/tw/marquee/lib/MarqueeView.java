@@ -807,6 +807,7 @@ public class MarqueeView extends View implements Runnable {
             xLocation = 0;
             yLocation = 0;
         } else if(isDisplacement){
+            setPosByTag(currenrLocation);
         } else {
             if (isResversable) {
                 if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
@@ -827,6 +828,7 @@ public class MarqueeView extends View implements Runnable {
             xLocation = 0;
             yLocation = 0;
         } else if(isDisplacement){
+            setPosByTag(currenrLocation);
         } else {
             if (isResversable) {
                 if (xLocation > 0 && repetType == REPET_ONCETIME) {
