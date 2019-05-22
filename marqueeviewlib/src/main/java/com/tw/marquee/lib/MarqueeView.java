@@ -708,9 +708,29 @@ public class MarqueeView extends View implements Runnable {
      * @param time 时间 单位 秒
      */
     public void setTextTimeSpeed(int time) {
-        if (isBLINK) {
+        if (isBLINK) {//闪现模式
             setmBLINKInvalidata(time * 1000);
-        } else {
+        }else if(isDisplacement){//平移模式
+            // 两点间距/时间=速度
+            int sX=0,sY=0;//左上角
+            int eX=getWidth(),eY=getHeight();//右下角
+            double width=0;
+            switch (currenrLocation){
+                case LOCATION_LEFT_TOP://左上->右下
+                case LOCATION_LEFT_BOTTOM://左下->右上
+                case LOCATION_RIGHT_TOP://右上->左下
+                case LOCATION_RIGHT_BOTTOM://右下->左上
+                    width=Math.sqrt(eX*eX+eY*eY);
+                    break;
+                case LOCATION_BOTTOM://下->上
+                case LOCATION_TOP://上->下
+                    width=eY;
+                    break;
+            }
+            time = (int) (time * 1000 / mInvalidata);
+            double speed = width / time;
+            setTextSpeed((float) speed);
+        }else{
             // 屏幕宽度/时间=速度
             int width = getScreenWidthPixels(getContext());
             time = (int) (time * 1000 / mInvalidata);
