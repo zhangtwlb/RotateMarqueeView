@@ -54,7 +54,7 @@ public class MarqueeView extends View implements Runnable {
     public static final int LOCATION_RIGHT_BOTTOM = 1007;//
     public static final int LOCATION_LEFT_TOP = 1008;//
     public static final int LOCATION_LEFT_BOTTOM = 1009;//
-    private int currenrLocation=LOCATION_LEFT_TOP;
+    private int currenrLocation = LOCATION_LEFT_TOP;
     private int contentWidth;//内容的宽度
     private boolean isRoll = false;//是否继续滚动
     private float oneBlack_width;//空格的宽度
@@ -74,11 +74,12 @@ public class MarqueeView extends View implements Runnable {
     private boolean isResversable;//反向标识
     private int times;//次数
     private long mInvalidata = 20;//刷新界面的频率  单位毫秒
-    private long mBLINKInvalidata = 1*1000;//闪现间隔时间 单位毫秒
-    private long mBLINKStay = 5*1000;//闪现停留时间 单位毫秒
-    private long tempBLINKStay =0;//闪现停留时间临时变量
+    private long mBLINKInvalidata = 1 * 1000;//闪现间隔时间 单位毫秒
+    private long mBLINKStay = 5 * 1000;//闪现停留时间 单位毫秒
+    private long tempBLINKStay = 0;//闪现停留时间临时变量
     private int currenrLocationTag = 0;
-    private int padding = 40;//间距
+    private float padding = 40;//间距
+    private double buchangX, buchangY;
 
 
     public MarqueeView(Context context) {
@@ -171,7 +172,9 @@ public class MarqueeView extends View implements Runnable {
                 case REPET_INTERVAL://无限循环
                     break;
             }
-        } else {
+        } else if(isDisplacement){
+
+        }else {
             int width = getMeasuredWidth(), height = getMeasuredHeight();
             canvas.rotate(textAngle, width / 2, height / 2);
             if (isFlicker) {//是否开启闪烁
@@ -183,7 +186,6 @@ public class MarqueeView extends View implements Runnable {
             } else {
                 setTextAlpha(alpha);
             }
-
             if (isResversable) {//反向
                 if (resetInit) {
                     setTextDistance(textDistance1);
@@ -273,7 +275,7 @@ public class MarqueeView extends View implements Runnable {
     }
 
     public void setmBLINKStay(long mBLINKStay) {
-        this.mBLINKStay = mBLINKStay*1000;
+        this.mBLINKStay = mBLINKStay * 1000;
     }
 
     public boolean isFlicker() {
@@ -317,7 +319,7 @@ public class MarqueeView extends View implements Runnable {
         this.textAngle = textAngle;
     }
 
-    public void setXYLocation(int x, int y) {
+    public void setXYLocation(float x, float y) {
         xLocation = x;
         yLocation = y;
     }
@@ -333,8 +335,8 @@ public class MarqueeView extends View implements Runnable {
     }
 
     public void setXYLocationByMode() {
-        if(currenrLocationTag>=locationModeList.size()){
-            currenrLocationTag=0;
+        if (currenrLocationTag >= locationModeList.size()) {
+            currenrLocationTag = 0;
         }
         setXYLocationByMode(locationModeList.get(currenrLocationTag));
     }
@@ -346,28 +348,28 @@ public class MarqueeView extends View implements Runnable {
                     setXYLocation(0, 0);
                     break;
                 case LOCATION_CENTER://zhongjian
-                    setXYLocation(getWidth() / 2-contentWidth/2, getHeight() / 2);
+                    setXYLocation(getWidth() / 2 - contentWidth / 2, getHeight() / 2);
                     break;
                 case LOCATION_BOTTOM://
-                    setXYLocation(0,getHeight() - 2 * padding);
+                    setXYLocation(0, getHeight() - 2 * padding);
                     break;
                 case LOCATION_LEFT:
-                    setXYLocation( padding, getHeight() / 2);
+                    setXYLocation(padding, getHeight() / 2);
                     break;
                 case LOCATION_LEFT_TOP:
                     setXYLocation(padding, 0);
                     break;
                 case LOCATION_LEFT_BOTTOM:
-                    setXYLocation( padding,getHeight() - 2 * padding);
+                    setXYLocation(padding, getHeight() - 2 * padding);
                     break;
                 case LOCATION_RIGHT:
-                    setXYLocation(getWidth() - contentWidth-padding, getHeight() / 2);
+                    setXYLocation(getWidth() - contentWidth - padding, getHeight() / 2);
                     break;
                 case LOCATION_RIGHT_TOP:
-                    setXYLocation(getWidth() - contentWidth-padding, 0);
+                    setXYLocation(getWidth() - contentWidth - padding, 0);
                     break;
                 case LOCATION_RIGHT_BOTTOM:
-                    setXYLocation(getWidth() - contentWidth-padding, getHeight() - 2 * padding);
+                    setXYLocation(getWidth() - contentWidth - padding, getHeight() - 2 * padding);
                     break;
             }
         } else {
@@ -379,7 +381,7 @@ public class MarqueeView extends View implements Runnable {
                     setXYLocation(getWidth() / 2, getHeight() / 2);
                     break;
                 case LOCATION_BOTTOM:
-                    setXYLocation(0,getHeight() - 2 * padding);
+                    setXYLocation(0, getHeight() - 2 * padding);
                     break;
             }
         }
@@ -414,61 +416,61 @@ public class MarqueeView extends View implements Runnable {
                         xLocation = r.nextInt(Math.abs(x));
                         yLocation = (int) (r.nextInt(Math.abs(y)) + textHeight / 2);
                     } else {
-                        if(tempBLINKStay>=mBLINKStay){//设置停留时间
+                        if (tempBLINKStay >= mBLINKStay) {//设置停留时间
                             setXYLocationByMode();
                             currenrLocationTag++;
-                            tempBLINKStay=0;
-                        }else {
-                            tempBLINKStay+=mBLINKInvalidata;
+                            tempBLINKStay = 0;
+                        } else {
+                            tempBLINKStay += mBLINKInvalidata;
                         }
                     }
-                }else if(isDisplacement){
+                } else if (isDisplacement) {
                     Thread.sleep(mInvalidata);
-                    //x 范围= 0- 宽度  y范围 = view 高度
-                    double h_wbi=((double) getHeight())/getWidth();//0.8
-                    double buchangX=speed/2;
-                    double buchangY=buchangX*h_wbi;
-                    int endx = getWidth(), endy =getHeight(); //view的宽高
-                    switch (currenrLocation){
+                    int endy = getHeight(); //view的宽高
+                    switch (currenrLocation) {
                         case LOCATION_LEFT_TOP://左上->右下
-                            xLocation+=buchangX;yLocation+=buchangY;
-                            if(xLocation>endx||yLocation>endy){
+                            xLocation += buchangX;
+                            yLocation += buchangY;
+                            if (yLocation > endy) {
                                 setPosByTag(currenrLocation);
                             }
                             break;
                         case LOCATION_LEFT_BOTTOM://左下->右上
-                            xLocation+=buchangX;yLocation-=buchangY;
-                            if(xLocation>endx||yLocation<=0){
+                            xLocation += buchangX;
+                            yLocation -= buchangY;
+                            if (yLocation <= 0) {
                                 setPosByTag(currenrLocation);
                             }
                             break;
                         case LOCATION_RIGHT_TOP://右上->左下
-                            xLocation-=buchangX;yLocation+=buchangY;
-                            if(xLocation<=0||yLocation>endy){
+                            xLocation -= buchangX;
+                            yLocation += buchangY;
+                            if (yLocation > endy) {
                                 setPosByTag(currenrLocation);
                             }
                             break;
                         case LOCATION_RIGHT_BOTTOM://右下->左上
-                            xLocation-=buchangX;yLocation-=buchangY;
-                            if(xLocation<0||yLocation<0){
+                            xLocation -= buchangX;
+                            yLocation -= buchangY;
+                            if (yLocation < 0) {
                                 setPosByTag(currenrLocation);
                             }
                             break;
-                            case LOCATION_BOTTOM://下->上
-                             yLocation-=buchangY;
-                            if(yLocation<0){
+                        case LOCATION_BOTTOM://下->上
+                            yLocation -= buchangY;
+                            if (yLocation < 0) {
                                 setPosByTag(currenrLocation);
                             }
                             break;
-                            case LOCATION_TOP://上->下
-                             yLocation+=buchangY;
-                            if(yLocation>endy){
+                        case LOCATION_TOP://上->下
+                            yLocation += buchangY;
+                            if (yLocation > endy) {
                                 setPosByTag(currenrLocation);
                             }
                             break;
                     }
-                    setXYLocation((int) xLocation,(int) yLocation);
-                    Log.e(TAG,"x="+xLocation+"&y="+yLocation);
+                    setXYLocation(xLocation,yLocation);
+                    Log.e(TAG, buchangX+"-x=" + xLocation +"##"+ buchangY+"-&y=" + yLocation);
                 } else {
                     Thread.sleep(mInvalidata);
                     if (isResversable) {
@@ -530,27 +532,33 @@ public class MarqueeView extends View implements Runnable {
      *  设置初始位置
      *
      * */
-    public void setPosByTag(int currenrLocation){
-        this.currenrLocation=currenrLocation;
+    public void setPosByTag(int currenrLocation) {
+        this.currenrLocation = currenrLocation;
         int endx = getWidth(), endy = getHeight(); //view的宽高
-        switch (currenrLocation){
+        switch (currenrLocation) {
             case LOCATION_LEFT_TOP:
-                xLocation=0;yLocation=0;
+                xLocation = 0;
+                yLocation = 0;
                 break;
             case LOCATION_LEFT_BOTTOM:
-                xLocation=0;yLocation=endy;
+                xLocation = 0;
+                yLocation = endy;
                 break;
             case LOCATION_RIGHT_TOP:
-                xLocation=endx;yLocation=0;
+                xLocation = endx;
+                yLocation = 0;
                 break;
             case LOCATION_RIGHT_BOTTOM:
-                xLocation=endx;yLocation=endy;
+                xLocation = endx;
+                yLocation = endy;
                 break;
             case LOCATION_BOTTOM:
-                xLocation=endx/2-contentWidth/2;yLocation=endy;
+                xLocation = endx / 2 - contentWidth / 2;
+                yLocation = endy;
                 break;
             case LOCATION_TOP:
-                xLocation=endx/2-contentWidth/2;yLocation=0;
+                xLocation = endx / 2 - contentWidth / 2;
+                yLocation = 0;
                 break;
         }
     }
@@ -703,38 +711,43 @@ public class MarqueeView extends View implements Runnable {
 
     /**
      * 设置单位时间内滚动完成 既 单位时间内的速度
-     *
+     * <p>
      * isBLINK 闪现模式
+     *
      * @param time 时间 单位 秒
      */
     public void setTextTimeSpeed(int time) {
         if (isBLINK) {//闪现模式
             setmBLINKInvalidata(time * 1000);
-        }else if(isDisplacement){//平移模式
+        } else if (isDisplacement) {//平移模式
             // 两点间距/时间=速度
-            int sX=0,sY=0;//左上角
-            int eX=getWidth(),eY=getHeight();//右下角
-            double width=0;
-            switch (currenrLocation){
+            int eX = getWidth(), eY = getHeight();//右下角
+            double width = 0;
+            switch (currenrLocation) {
                 case LOCATION_LEFT_TOP://左上->右下
                 case LOCATION_LEFT_BOTTOM://左下->右上
                 case LOCATION_RIGHT_TOP://右上->左下
                 case LOCATION_RIGHT_BOTTOM://右下->左上
-                    width=Math.sqrt(eX*eX+eY*eY);
+                    width = Math.sqrt(eX * eX + eY * eY);
                     break;
                 case LOCATION_BOTTOM://下->上
                 case LOCATION_TOP://上->下
-                    width=eY;
+                    width = eY;
                     break;
             }
-            time = (int) (time * 1000 / mInvalidata);
-            double speed = width / time;
+            int aTime = (int) (time * 1000 / mInvalidata);
+            double speed = width / aTime;
             setTextSpeed((float) speed);
-        }else{
+
+            //x 范围= 0- 宽度  y范围 = view 高度
+            double h_wbi = ((double) getHeight()) / getWidth();//0.8
+            buchangX = speed / 2;
+            buchangY = (speed / 2 )* h_wbi;
+        } else {
             // 屏幕宽度/时间=速度
             int width = getScreenWidthPixels(getContext());
-            time = (int) (time * 1000 / mInvalidata);
-            double speed = ((double) width) / time;
+            int aTime = (int) (time * 1000 / mInvalidata);
+            double speed = ((double) width) / aTime;
             setTextSpeed((float) speed);
         }
         stopRoll();
@@ -776,10 +789,11 @@ public class MarqueeView extends View implements Runnable {
     /***
      * 设置闪现模式下的内容
      * */
-    public void setBlinkContent(String text,boolean isBLINK){
+    public void setBlinkContent(String text, boolean isBLINK) {
         setBLINK(isBLINK);
         setContent(text);
     }
+
     /**
      * 设置滚动的条目内容  字符串形式的
      *
@@ -789,9 +803,12 @@ public class MarqueeView extends View implements Runnable {
         if (TextUtils.isEmpty(content2)) {
             return;
         }
-        if(isBLINK){
+        if (isBLINK) {
             xLocation = 0;
-            yLocation=0;
+            yLocation = 0;
+        } else if(isDisplacement){
+            xLocation = getWidth()/2-contentWidth/2;
+            yLocation = 0;
         }else {
             if (isResversable) {
                 if (isResetLocation) {//控制重新设置文本内容的时候，是否初始化xLocation。
@@ -804,14 +821,16 @@ public class MarqueeView extends View implements Runnable {
             }
         }
 
-
         if (!content2.endsWith(black_count)) {
             content2 = content2 + black_count;//避免没有后缀
         }
         this.content = content2;
-        if(isBLINK){
+        if (isBLINK) {
             xLocation = 0;
-            yLocation=0;
+            yLocation = 0;
+        } else if(isDisplacement){
+            xLocation = getWidth()/2-contentWidth/2;
+            yLocation = 0;
         }else {
             if (isResversable) {
                 if (xLocation > 0 && repetType == REPET_ONCETIME) {
