@@ -172,9 +172,8 @@ public class MarqueeView extends View implements Runnable {
                 case REPET_INTERVAL://无限循环
                     break;
             }
-        } else if(isDisplacement){
-
-        }else {
+        } else if (isDisplacement) {
+        } else {
             int width = getMeasuredWidth(), height = getMeasuredHeight();
             canvas.rotate(textAngle, width / 2, height / 2);
             if (isFlicker) {//是否开启闪烁
@@ -426,12 +425,24 @@ public class MarqueeView extends View implements Runnable {
                     }
                 } else if (isDisplacement) {
                     Thread.sleep(mInvalidata);
-                    int endy = getHeight(); //view的宽高
+                    int endx=getWidth(),endy = getHeight(); //view的宽高
                     switch (currenrLocation) {
                         case LOCATION_LEFT_TOP://左上->右下
                             xLocation += buchangX;
                             yLocation += buchangY;
                             if (yLocation > endy) {
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                        case LOCATION_LEFT://从左向右
+                            xLocation += buchangX;
+                            if (xLocation > endx) {
+                                setPosByTag(currenrLocation);
+                            }
+                            break;
+                        case LOCATION_RIGHT://从又向左
+                            xLocation -= buchangX;
+                            if (xLocation <0) {
                                 setPosByTag(currenrLocation);
                             }
                             break;
@@ -469,8 +480,8 @@ public class MarqueeView extends View implements Runnable {
                             }
                             break;
                     }
-                    setXYLocation(xLocation,yLocation);
-                    Log.e(TAG, buchangX+"-x=" + xLocation +"##"+ buchangY+"-&y=" + yLocation);
+                    setXYLocation(xLocation, yLocation);
+                    Log.e(TAG, buchangX + "-x=" + xLocation + "##" + buchangY + "-&y=" + yLocation);
                 } else {
                     Thread.sleep(mInvalidata);
                     if (isResversable) {
@@ -540,6 +551,14 @@ public class MarqueeView extends View implements Runnable {
                 xLocation = 0;
                 yLocation = 0;
                 break;
+            case LOCATION_LEFT://从左向右
+                xLocation = -contentWidth;
+                yLocation = endy/2-getContentHeight()/2;
+                break;
+            case LOCATION_RIGHT://从又向左
+                xLocation = endx;
+                yLocation = endy/2-getContentHeight()/2;
+                break;
             case LOCATION_LEFT_BOTTOM:
                 xLocation = 0;
                 yLocation = endy;
@@ -561,6 +580,17 @@ public class MarqueeView extends View implements Runnable {
                 yLocation = 0;
                 break;
         }
+        switch (repetType) {
+            case REPET_ONCETIME://n次后停止
+                if (times == repetCounts+1) {
+                    stopRoll();
+                    times = 0;
+                }
+                times++;
+                break;
+            case REPET_INTERVAL://无限循环
+                break;
+        }
     }
 
 
@@ -579,11 +609,20 @@ public class MarqueeView extends View implements Runnable {
      * @param isResversable
      */
     public void setReversalble(boolean isResversable) {
-        StringBuilder stringBuiler = new StringBuilder(content);
-        content = stringBuiler.reverse().toString();//文字反向
+        textReversalble();
         this.isResversable = isResversable;//方向反向
         resetInit = true;
     }
+    /**
+     * 反向文字
+     *
+     */
+    private void textReversalble() {
+        StringBuilder stringBuiler = new StringBuilder(content);
+        content = stringBuiler.reverse().toString();//文字反向
+        resetInit = true;
+    }
+
 
 
     /**
@@ -734,6 +773,13 @@ public class MarqueeView extends View implements Runnable {
                 case LOCATION_TOP://上->下
                     width = eY;
                     break;
+                case LOCATION_LEFT://左->右
+                    textReversalble();
+                    width = eY;
+                    break;
+                case LOCATION_RIGHT://右->左
+                    width = eY;
+                    break;
             }
             double aTime = time * 1000 / mInvalidata;
             double speed = width / aTime;
@@ -742,7 +788,7 @@ public class MarqueeView extends View implements Runnable {
             //x 范围= 0- 宽度  y范围 = view 高度
             double h_wbi = ((double) getHeight()) / getWidth();//0.8
             buchangX = speed / 2;
-            buchangY = (speed / 2 )* h_wbi;
+            buchangY = (speed / 2) * h_wbi;
         } else {
             // 屏幕宽度/时间=速度
             int width = getScreenWidthPixels(getContext());
@@ -806,7 +852,7 @@ public class MarqueeView extends View implements Runnable {
         if (isBLINK) {
             xLocation = 0;
             yLocation = 0;
-        } else if(isDisplacement){
+        } else if (isDisplacement) {
             setPosByTag(currenrLocation);
         } else {
             if (isResversable) {
@@ -827,7 +873,7 @@ public class MarqueeView extends View implements Runnable {
         if (isBLINK) {
             xLocation = 0;
             yLocation = 0;
-        } else if(isDisplacement){
+        } else if (isDisplacement) {
             setPosByTag(currenrLocation);
         } else {
             if (isResversable) {

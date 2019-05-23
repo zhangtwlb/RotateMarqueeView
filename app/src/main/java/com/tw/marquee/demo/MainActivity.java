@@ -16,9 +16,9 @@ import com.tw.marquee.lib.MarqueeView;
 public class MainActivity extends AppCompatActivity {
 
     private MarqueeView mV3;
-    private Button btStop, bt_control_continue, bt_control_add, bt_control_flicker, bt_control_reversal, bt_control_blink,bt_control_open_translation;
+    private Button btStop, bt_control_continue, bt_control_add, bt_control_flicker, bt_control_reversal, bt_control_blink, bt_control_open_translation;
     private EditText ed_text;
-    private Spinner bt_control_color, bt_control_size, bt_control_speed, bt_control_from,bt_control_from_translation, bt_control_alpha, bt_control_count, bt_control_repeat_count, bt_control_space, bt_control_location;
+    private Spinner bt_control_color, bt_control_size, bt_control_speed, bt_control_from, bt_control_from_translation, bt_control_alpha, bt_control_count, bt_control_repeat_count, bt_control_space, bt_control_location;
     private boolean flag, flagReversal;
     private boolean flagBlink;
     private boolean flagDisp;
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String str = parent.getItemAtPosition(position).toString();
-                if (position > 0){
+                if (position > 0) {
                     switch (str) {
                         case "LEFT_TOP-RIGHT_BOTTOM":
                             mV3.setPosByTag(MarqueeView.LOCATION_LEFT_TOP);
@@ -149,11 +149,17 @@ public class MainActivity extends AppCompatActivity {
                         case "RIGHT_TOP-LEFT_BOTTOM":
                             mV3.setPosByTag(MarqueeView.LOCATION_RIGHT_TOP);
                             break;
-                            case "TOP-BOTTOM":
+                        case "TOP-BOTTOM":
                             mV3.setPosByTag(MarqueeView.LOCATION_TOP);
                             break;
-                            case "BOTTOM-TOP":
+                        case "BOTTOM-TOP":
                             mV3.setPosByTag(MarqueeView.LOCATION_BOTTOM);
+                            break;
+                        case "LEFT-RIGHT":
+                            mV3.setPosByTag(MarqueeView.LOCATION_LEFT);
+                            break;
+                        case "RIGHT-LEFT":
+                            mV3.setPosByTag(MarqueeView.LOCATION_RIGHT);
                             break;
                     }
                 }
