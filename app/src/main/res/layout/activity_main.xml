@@ -80,13 +80,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
-        <Spinner
-            android:id="@+id/bt_control_from"
+        <Button
+            android:id="@+id/bt_control_blink"
             android:layout_width="wrap_content"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:tooltipText="@string/app_name"
-            android:entries="@array/spinner_from" />
+            android:layout_weight="1"
+            android:text="闪现->" />
         <Spinner
             android:id="@+id/bt_control_location"
             android:layout_width="wrap_content"
@@ -107,6 +106,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
+        <Button
+            android:id="@+id/bt_control_open_translation"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="平移->" />
         <Spinner
             android:id="@+id/bt_control_from_translation"
             android:layout_width="wrap_content"
@@ -114,12 +119,6 @@
             android:layout_height="wrap_content"
             android:tooltipText="@string/app_name"
             android:entries="@array/spinner_from_translation" />
-        <Button
-            android:id="@+id/bt_control_open_translation"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="平移" />
 
     </LinearLayout>
     <LinearLayout
@@ -138,24 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="停止" />
-        <Button
-            android:id="@+id/bt_control_flicker"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="闪烁" />
-        <Button
-            android:id="@+id/bt_control_reversal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="反转" />
-        <Button
-            android:id="@+id/bt_control_blink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="闪现" />
+
     </LinearLayout>
 
 
