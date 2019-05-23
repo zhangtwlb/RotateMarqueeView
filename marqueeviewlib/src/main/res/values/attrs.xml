@@ -94,13 +94,10 @@
         <item>RIGHT-LEFT</item>
     </string-array>
     <string-array name="spinner_location" >
-        <item>Y轴位置</item>
+        <item>左右平移时Y轴位置</item>
         <item>TOP</item>
         <item>CENTER</item>
         <item>BOTTOM</item>
-
-        <item>LEFT</item>
-        <item>RIGTH</item>
     </string-array>
     <string-array name="spinner_alpha" >
         <item>透明度</item>

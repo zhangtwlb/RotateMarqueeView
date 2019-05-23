@@ -131,7 +131,6 @@ public class MarqueeView extends View implements Runnable {
         textSize = tta.getFloat(R.styleable.MarqueeView_marqueeview_text_size, textSize);
         textAngle = tta.getFloat(R.styleable.MarqueeView_marqueeview_text_angle, textAngle);
         textDistance1 = tta.getInteger(R.styleable.MarqueeView_marqueeview_text_distance, textDistance1);
-        startLocationDistance = tta.getFloat(R.styleable.MarqueeView_marqueeview_text_startlocationdistance, startLocationDistance);
         repetType = tta.getInt(R.styleable.MarqueeView_marqueeview_repet_type, repetType);
         tta.recycle();
     }

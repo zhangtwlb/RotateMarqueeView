@@ -87,19 +87,12 @@
             android:layout_weight="1"
             android:text="闪现->" />
         <Spinner
-            android:id="@+id/bt_control_location"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:entries="@array/spinner_location" />
-        <Spinner
             android:id="@+id/bt_control_space"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:tooltipText="@string/app_name"
             android:entries="@array/spinner_space" />
-
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -108,18 +101,22 @@
         android:orientation="horizontal">
         <Button
             android:id="@+id/bt_control_open_translation"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="平移->" />
         <Spinner
             android:id="@+id/bt_control_from_translation"
             android:layout_width="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_height="wrap_content"
             android:tooltipText="@string/app_name"
             android:entries="@array/spinner_from_translation" />
-
+        <Spinner
+            android:id="@+id/bt_control_location"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:entries="@array/spinner_location" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
