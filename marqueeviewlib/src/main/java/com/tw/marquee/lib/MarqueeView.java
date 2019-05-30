@@ -70,7 +70,7 @@ public class MarqueeView extends View implements Runnable {
     private int alpha = 255;//默认透明度
 
     private int times;//次数
-    private long mInvalidata = 20;//刷新界面的频率  单位毫秒
+    private long mInvalidata = 10;//刷新界面的频率  单位毫秒
     private long mBLINKInvalidata = 1 * 1000;//闪现间隔时间 单位毫秒
     private long mBLINKStay = 5 * 1000;//闪现停留时间 单位毫秒
     private long tempBLINKStay = 0;//闪现停留时间临时变量
@@ -317,7 +317,7 @@ public class MarqueeView extends View implements Runnable {
                     }
                 } else if (currentType==TYPE_DISPLACEMENT) {
                     Thread.sleep(mInvalidata);
-                    int endx=getWidth(),endy = getHeight(); //view的宽高
+                    int endx=getWidth()+contentWidth,endy = getHeight(); //view的宽高
                     switch (currentLocation) {
                         case LOCATION_LEFT_TOP://左上->右下
                             xLocation += buchangX;
@@ -334,7 +334,7 @@ public class MarqueeView extends View implements Runnable {
                             break;
                         case LOCATION_RIGHT://从又向左
                             xLocation -= buchangX;
-                            if (xLocation <0) {
+                            if (xLocation <-contentWidth) {
                                 setPosByTag(currentLocation);
                             }
                             break;
@@ -637,9 +637,11 @@ public class MarqueeView extends View implements Runnable {
                     break;
                 case LOCATION_BOTTOM://下->上
                 case LOCATION_TOP://上->下
+                    width = eY;
+                    break;
                 case LOCATION_LEFT://左->右
                 case LOCATION_RIGHT://右->左
-                    width = eY;
+                    width = eX;
                     break;
             }
             double aTime = time * 1000 / mInvalidata;
@@ -648,11 +650,9 @@ public class MarqueeView extends View implements Runnable {
 
             //x 范围= 0- 宽度  y范围 = view 高度
             double h_wbi = ((double) getHeight()) / getWidth();//0.8
-            buchangX = speed / 2;
-            buchangY = (speed / 2) * h_wbi;
+            buchangX = speed;
+            buchangY = (speed) * h_wbi;
         }
-        stopRoll();
-        continueRoll();
     }
 
 
